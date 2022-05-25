@@ -1,0 +1,392 @@
+# id = `${bondMediatorAddress.toHex()}`
+type BondMediator @entity {
+  id: ID!
+  mediator: Bytes!
+
+  admin: Bytes!
+  beacon: Bytes!
+  implementation: Bytes!
+  beneficiary: Bytes!
+  owner: Bytes!
+
+  collateralTokens: Bytes!
+  collateralAmount: BigInt!
+
+  factory: BondFactory!
+
+  paused: Boolean!
+
+  factories: [BondFactory!]! @derivedFrom(field: "mediator")
+  bonds: [Bond!]! @derivedFrom(field: "mediator")
+
+  daos: [DAO!]! @derivedFrom(field: "mediator")
+  daoRoles: [DAO__Role!]! @derivedFrom(field: "mediator")
+  
+  roles: [Role!]! @derivedFrom(field: "mediator")
+
+  lastUpdatedTimestamp: BigInt!
+  createdAtTimestamp: BigInt!
+}
+
+# id = `${role.toHex()}-${account.toHex()}`
+type Role @entity {
+  id: ID!
+
+  role: Bytes!
+  account: Bytes!
+
+  mediator: BondMediator!
+
+  lastUpdatedTimestamp: BigInt!
+  createdAtTimestamp: BigInt!
+}
+
+# id = `${dao.toHex()}`
+type DAO @entity {
+  id: ID!
+  dao: BigInt!
+
+  treasury: Bytes!
+  owner: Bytes!
+
+  mediator: BondMediator!
+  
+  metadata: DAO__Metadata! @derivedFrom(field: "dao")
+
+  bonds: [Bond!]! @derivedFrom(field: "dao")
+  roles: [DAO__Role!]! @derivedFrom(field: "dao")
+
+  collateralWhitelist: [DAO__CollateralWhitelist!]! @derivedFrom(field: "dao")
+
+  lastUpdatedTimestamp: BigInt!
+  createdAtTimestamp: BigInt!
+}
+
+# id = `${daoId.toHex()}`
+type DAO__Metadata @entity {
+  id: ID!
+
+  dao: DAO!
+  data: String!
+
+  mediator: BondMediator!
+
+  lastUpdatedTimestamp: BigInt!
+  createdAtTimestamp: BigInt!
+}
+
+# id = `${daoId.toHex()}-${role.toHex()}-${account.toHex()}`;
+type DAO__Role @entity {
+  id: ID!
+
+  dao: DAO!
+  account: Bytes!
+  role: Bytes!
+
+  mediator: BondMediator!
+
+  lastUpdatedTimestamp: BigInt!
+  createdAtTimestamp: BigInt!
+}
+
+# id = `${daoId.toHex()}-${token.toHex()}`;
+type DAO__CollateralWhitelist @entity {
+  id: ID!
+
+  dao: DAO!
+  token: Bytes!
+
+  mediator: BondMediator!
+
+  lastUpdatedTimestamp: BigInt!
+  createdAtTimestamp: BigInt!
+}
+
+# id = `${bondFactoryAddress.toHex()}`
+type BondFactory @entity {
+  id: ID!
+  factory: Bytes!
+
+  owner: Bytes!
+  beneficiary: Bytes!
+
+  bonds: [Bond!]! @derivedFrom(field: "factory")
+
+  paused: Boolean!
+
+  mediator: BondMediator!
+
+  lastUpdatedTimestamp: BigInt!
+  createdAtTimestamp: BigInt!
+}
+
+# id = `${bondAddress.toHex()}`
+type Bond @entity {
+  id: ID!
+  bond: Bytes!
+
+  owner: Bytes!
+  treasury: Bytes!
+  beneficiary: Bytes!
+  
+  dao: DAO!
+  factory: BondFactory!
+  mediator: BondMediator!
+
+  paused: Boolean!
+  expired: Boolean!
+
+  metadata: Bond__Metadata! @derivedFrom(field: "bond")
+  configuration: Bond__Configuration! @derivedFrom(field: "bond")
+
+  rewards: [Bond__RewardPool!]! @derivedFrom(field: "bond")
+  rewardDebts: [Bond__RewardDebt!]! @derivedFrom(field: "bond")
+  rewardsClaimed: [Bond__RewardClaimed!]! @derivedFrom(field: "bond")
+  deposits: [Bond__Deposit!]! @derivedFrom(field: "bond")
+  slashedDeposits: [Bond__SlashDeposit!]! @derivedFrom(field: "bond")
+  transfers: [Bond__Transfer!]! @derivedFrom(field: "bond")
+
+  isRedeemable: Boolean!
+  redeemableReason: String!
+  redeemableAuthorizer: Bytes!
+  redeemableTimestamp: BigInt!
+  redemptionExcess: BigInt!
+
+  redemptions: [Bond__Redemption!]! @derivedFrom(field: "bond")
+
+  collateralAmount: BigInt!
+  collateralFull: Boolean!
+  collateralSlashed: BigInt!
+  collateralTokens: Bytes!
+  collateralWithdrawn: Boolean!
+
+  lastUpdatedTimestamp: BigInt!
+  createdAtTimestamp: BigInt!
+}
+
+# id = `${bondAddress.toHex()}`
+type Bond__Metadata @entity {
+  id: ID!
+
+  bond: Bond!
+  name: String!
+  symbol: String!
+  data: String!
+
+  lastUpdatedTimestamp: BigInt!
+  createdAtTimestamp: BigInt!
+}
+
+# id = `${bondAddress.toHex()}`
+type Bond__Configuration @entity {
+  id: ID!
+
+  bond: Bond!
+
+  debtTokenAmount: BigInt!
+  collateralTokens: Bytes!
+  expiryTimestamp: BigInt!
+  minimumDeposit: BigInt!
+
+  lastUpdatedTimestamp: BigInt!
+  createdAtTimestamp: BigInt!
+}
+
+# id = `${bondAddress.toHex()}-${tokens.toHex()}`;
+type Bond__RewardPool @entity {
+  id: ID!
+
+  bond: Bond!
+
+  tokens: Bytes!
+  amount: BigInt!
+  timeLock: BigInt!
+  collateralAmount: BigInt!
+
+  lastUpdatedTimestamp: BigInt!
+  createdAtTimestamp: BigInt!
+}
+
+# id = `${bondAddress.toHex()}-${depositor.toHex()}-${collateralTokens.toHex()}`;
+type Bond__Deposit @entity {
+  id: ID!
+
+  bond: Bond!
+
+  depositor: Bytes!
+  collateralTokens: Bytes!
+  collateralAmount: BigInt!
+
+  lastUpdatedTimestamp: BigInt!
+  createdAtTimestamp: BigInt!
+}
+
+# id = `${bondAddress.toHex()}-${redeemer.toHex()}-${debtTokens.toHex()}`;
+type Bond__Redemption @entity {
+  id: ID!
+
+  bond: Bond!
+
+  redeemer: Bytes!
+  collateralTokens: Bytes!
+  collateralAmount: BigInt!
+  debtTokens: Bytes!
+  debtAmount: BigInt!
+
+  lastUpdatedTimestamp: BigInt!
+  createdAtTimestamp: BigInt!
+}
+
+# id = `${transactionHash.toHex()}-${logIndex.toHex()}`;
+type Bond__RewardDebt @entity {
+  id: ID!
+
+  bond: Bond!
+
+  rewardDebt: BigInt!
+  claimant: Bytes!
+  tokens: Bytes!
+
+  createdAtTimestamp: BigInt!
+}
+
+# id = `${transactionHash.toHex()}-${logIndex.toHex()}`;
+type Bond__RewardClaimed @entity {
+  id: ID!
+
+  bond: Bond!
+
+  claimant: Bytes!
+  tokens: Bytes!
+  amount: BigInt!
+
+  createdAtTimestamp: BigInt!
+}
+
+# id = `${transactionHash.toHex()}-${logIndex.toHex()}`;
+type Bond__SlashDeposit @entity {
+  id: ID!
+
+  bond: Bond!
+
+  collateralTokens: Bytes!
+  collateralAmount: BigInt!
+  reason: String!
+
+  createdAtTimestamp: BigInt!
+}
+
+# id = `${transactionHash.toHex()}-${logIndex.toHex()}`;
+type Bond__Transfer @entity {
+  id: ID!
+
+  bond: Bond!
+
+  from: Bytes!
+  to: Bytes!
+  value: BigInt!
+
+  createdAtTimestamp: BigInt!
+}
+
+# id = `${stakingPoolFactoryAddress.toHex()}`;
+type StakingPoolFactory @entity {
+  id: ID!
+  factory: Bytes!
+
+  paused: Boolean!
+
+  stakingPools: [StakingPool!]! @derivedFrom(field: "factory")
+
+  lastUpdatedTimestamp: BigInt!
+  createdAtTimestamp: BigInt!
+}
+
+# id = `${stakingPoolAddress.toHex()}`;
+type StakingPool @entity {
+  id: ID!
+  pool: Bytes!
+
+  factory: StakingPoolFactory!
+
+  paused: Boolean!
+  emergencyMode: Boolean!
+
+  creator: Bytes!
+  treasury: Bytes!
+
+  stakeToken: Bytes!
+  amount: BigInt!
+  minimumContribution: BigInt!
+
+  epochStartTimestamp: BigInt!
+  epochDuration: BigInt!
+
+  rewardsAvailable: Boolean!
+  rewardsAvailableTimestamp: BigInt!
+
+  rewardType: Int!
+
+  rewards: [StakingPool__Reward!]! @derivedFrom(field: "pool")
+  deposits: [StakingPool__Deposit!]! @derivedFrom(field: "pool")
+  withdrawals: [StakingPool__Withdrawal!]! @derivedFrom(field: "pool")
+
+  lastUpdatedTimestamp: BigInt!
+  createdAtTimestamp: BigInt!
+}
+
+# id = `${stakingPoolAddress.toHex()}-${user.toHex()}`;
+type StakingPool__Deposit @entity {
+  id: ID!
+  pool: StakingPool!
+
+  user: Bytes!
+  amount: BigInt!
+
+  lastUpdatedTimestamp: BigInt!
+  createdAtTimestamp: BigInt!
+}
+
+# id = `${stakingPoolAddress.toHex()}-${user.toHex()}`;
+type StakingPool__Withdrawal @entity {
+  id: ID!
+  pool: StakingPool!
+
+  user: Bytes!
+  amount: BigInt!
+
+  lastUpdatedTimestamp: BigInt!
+  createdAtTimestamp: BigInt!
+}
+
+# id = `${stakingPoolAddress.toHex()}-${token.toHex()}`;
+type StakingPool__Reward @entity {
+  id: ID!
+  pool: StakingPool!
+
+  token: Bytes!
+  amount: BigInt!
+
+  maxAmount: BigInt!
+  ratio: BigInt!
+
+  withdrawals: [StakingPool__RewardWithdrawal!]! @derivedFrom(field: "reward")
+
+  lastUpdatedTimestamp: BigInt!
+  createdAtTimestamp: BigInt!
+}
+
+# id = `${stakingPoolAddress.toHex()}-${user.toHex()}-${token.toHex()}`;
+type StakingPool__RewardWithdrawal @entity {
+  id: ID!
+  pool: StakingPool!
+
+  user: Bytes!
+  token: Bytes!
+  amount: BigInt!
+
+  reward: StakingPool__Reward!
+
+  lastUpdatedTimestamp: BigInt!
+  createdAtTimestamp: BigInt!
+}

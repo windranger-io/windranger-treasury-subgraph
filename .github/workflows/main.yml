@@ -1,0 +1,29 @@
+name: Test subgraph
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+          cache: 'yarn'
+      - name: Setup yarn
+        run: npm install -g yarn
+      - name: Install deps
+        run: yarn install --frozen-lockfile
+      - name: Codegen and build
+        run: yarn run prepare:local && yarn run codegen && yarn run build
+      - name: Run linting
+        run: yarn run lint
+      - name: Run tests
+        run: yarn run test
+  
