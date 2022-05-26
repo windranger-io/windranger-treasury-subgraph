@@ -37,7 +37,7 @@ process () {
 
 if [[ $CONTRACT_REPO == "" ]];
 then
-    printf >&2 '\nPlease ensure that CONTRACT_REPO and CONTRACT_FILES are defined in the root .env file.\n\n'
+    printf >&2 '\nPlease ensure that CONTRACT_REPO and CONTRACT_FILES are defined in the root `contracts.cfg` file.\n\n'
     exit 1
 else
     if mkdir ./contracts || [[ ! -d "./contracts/.git" ]];
