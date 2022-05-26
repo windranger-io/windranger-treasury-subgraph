@@ -8,7 +8,6 @@ import {
   createStakingPoolReward,
   DAO_ID,
   DAO_ID_HEX,
-  defaultAddress,
   defaultBigInt,
   defaultLogType,
   newBlock,
