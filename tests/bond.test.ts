@@ -56,7 +56,7 @@ import {
   handleWithdrawCollateral
 } from '../src/bond';
 
-// -  AllowRedemption(indexed address,string)
+// - AllowRedemption(indexed address,string)
 test('Will handle AllowRedemption event', () => {
   const instigator = Address.fromString('0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266');
   const authorizer = Address.fromString('0x70997970c51812dc3a010c7d01b50e0d17dc79c8');
@@ -91,7 +91,7 @@ test('Will handle AllowRedemption event', () => {
   clearStore();
 });
 
-// -  ClaimReward(indexed address,uint256,indexed address)
+// - ClaimReward(indexed address,uint256,indexed address)
 test('Will handle ClaimReward event', () => {
   const claimant = Address.fromString('0x70997970c51812dc3a010c7d01b50e0d17dc79c8');
   const tokens = Address.fromString('0x8626f6940e2eb28930efb4cef49b2d1f2c9c1199');
@@ -128,7 +128,7 @@ test('Will handle ClaimReward event', () => {
   clearStore();
 });
 
-// -  Deposit(indexed address,indexed address,uint256,indexed address)
+// - Deposit(indexed address,indexed address,uint256,indexed address)
 test('Will handle Deposit event', () => {
   const instigator = Address.fromString('0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266');
   const depositor = Address.fromString('0x70997970c51812dc3a010c7d01b50e0d17dc79c8');
@@ -167,14 +167,17 @@ test('Will handle Deposit event', () => {
   clearStore();
 });
 
-// -  ERC20Sweep(indexed address,indexed address,uint256,indexed address)
+// - ERC20Sweep(indexed address,indexed address,uint256,indexed address)
 test('Will handle ERC20Sweep event', () => {
   const instigator = Address.fromString('0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266');
   const beneficiary = Address.fromString('0x70997970c51812dc3a010c7d01b50e0d17dc79c8');
   const tokens = Address.fromString('0x8626f6940e2eb28930efb4cef49b2d1f2c9c1199');
   const amount = 100;
 
+  const sweepId = `${defaultAddress.toHex()}-${defaultBigInt.toHex()}`;
+
   const bond = createBond();
+  bond.collateralTokens = tokens;
   bond.collateralAmount = BigInt.fromI32(amount);
 
   bond.save();
@@ -200,11 +203,16 @@ test('Will handle ERC20Sweep event', () => {
   );
 
   assert.fieldEquals('Bond', BOND_ADDRESS, 'collateralAmount', '0');
+  assert.fieldEquals('Bond', BOND_ADDRESS, 'sweeps', `[${sweepId}]`);
+
+  assert.fieldEquals('Bond__Sweep', sweepId, 'amount', `${amount}`);
+  assert.fieldEquals('Bond__Sweep', sweepId, 'token', `${tokens.toHex()}`);
+  assert.fieldEquals('Bond__Sweep', sweepId, 'beneficiary', `${beneficiary.toHex()}`);
 
   clearStore();
 });
 
-// -  Expire(indexed address,indexed address,uint256,indexed address)
+// - Expire(indexed address,indexed address,uint256,indexed address)
 test('Will handle Expire event', () => {
   const instigator = Address.fromString('0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266');
   const treasury = Address.fromString('0x70997970c51812dc3a010c7d01b50e0d17dc79c8');
@@ -242,7 +250,7 @@ test('Will handle Expire event', () => {
   clearStore();
 });
 
-// -  FullCollateral(indexed address,uint256,indexed address)
+// - FullCollateral(indexed address,uint256,indexed address)
 test('Will handle FullCollateral event', () => {
   const instigator = Address.fromString('0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266');
   const tokens = Address.fromString('0x8626f6940e2eb28930efb4cef49b2d1f2c9c1199');
@@ -273,7 +281,7 @@ test('Will handle FullCollateral event', () => {
   clearStore();
 });
 
-// -  MetaDataUpdate(string,indexed address)
+// - MetaDataUpdate(string,indexed address)
 test('Will handle MetaDataUpdate event', () => {
   const instigator = Address.fromString('0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266');
   const data = 'data string;';
@@ -303,7 +311,7 @@ test('Will handle MetaDataUpdate event', () => {
   clearStore();
 });
 
-// -  OwnershipTransferred(indexed address,indexed address)
+// - OwnershipTransferred(indexed address,indexed address)
 test('Will handle OwnershipTransferred event', () => {
   const previousOwner = Address.fromString('0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266');
   const newOwner = Address.fromString('0x8626f6940e2eb28930efb4cef49b2d1f2c9c1199');
@@ -334,7 +342,7 @@ test('Will handle OwnershipTransferred event', () => {
   clearStore();
 });
 
-// -  PartialCollateral(indexed address,uint256,indexed address,uint256,indexed address)
+// - PartialCollateral(indexed address,uint256,indexed address,uint256,indexed address)
 test('Will handle PartialCollateral event', () => {
   const instigator = Address.fromString('0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266');
   const tokens = Address.fromString('0x8626f6940e2eb28930efb4cef49b2d1f2c9c1199');
@@ -368,7 +376,7 @@ test('Will handle PartialCollateral event', () => {
   clearStore();
 });
 
-// -  Paused(address)
+// - Paused(address)
 test('Will handle Paused event', () => {
   const instigator = Address.fromString('0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266');
 
@@ -394,7 +402,7 @@ test('Will handle Paused event', () => {
   clearStore();
 });
 
-// -  RedeemableUpdate(bool,string,indexed address)
+// - RedeemableUpdate(bool,string,indexed address)
 test('Will handle RedeemableUpdate event', () => {
   const instigator = Address.fromString('0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266');
   const isRedeemable = true;
@@ -428,7 +436,7 @@ test('Will handle RedeemableUpdate event', () => {
   clearStore();
 });
 
-// -  Redemption(indexed address,indexed address,uint256,indexed address,uint256)
+// - Redemption(indexed address,indexed address,uint256,indexed address,uint256)
 test('Will handle Redemption event', () => {
   const instigator = Address.fromString('0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266');
   const redeemer = Address.fromString('0x70997970c51812dc3a010c7d01b50e0d17dc79c8');
@@ -484,7 +492,7 @@ test('Will handle Redemption event', () => {
   clearStore();
 });
 
-// -  RedemptionTimestampUpdate(uint256,indexed address)
+// - RedemptionTimestampUpdate(uint256,indexed address)
 test('Will handle RedemptionTimestampUpdate event', () => {
   const instigator = Address.fromString('0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266');
   const date = new Date(1215752000);
@@ -515,7 +523,7 @@ test('Will handle RedemptionTimestampUpdate event', () => {
   clearStore();
 });
 
-// -  RegisterReward(indexed address,uint256,uint256,indexed address)
+// - RegisterReward(indexed address,uint256,uint256,indexed address)
 test('Will handle RegisterReward event', () => {
   const tokens = Address.fromString('0x8626f6940e2eb28930efb4cef49b2d1f2c9c1199');
   const date = new Date(1215752000);
@@ -554,7 +562,7 @@ test('Will handle RegisterReward event', () => {
   clearStore();
 });
 
-// -  RewardDebt(indexed address,indexed address,uint256,indexed address)
+// - RewardDebt(indexed address,indexed address,uint256,indexed address)
 test('Will handle RewardDebt event', () => {
   const claimant = Address.fromString('0x70997970c51812dc3a010c7d01b50e0d17dc79c8');
   const tokens = Address.fromString('0x8626f6940e2eb28930efb4cef49b2d1f2c9c1199');
@@ -587,12 +595,17 @@ test('Will handle RewardDebt event', () => {
   assert.fieldEquals('Bond__RewardDebt', rewardDebtId, 'bond', BOND_ADDRESS);
   assert.fieldEquals('Bond__RewardDebt', rewardDebtId, 'claimant', claimant.toHex());
   assert.fieldEquals('Bond__RewardDebt', rewardDebtId, 'tokens', tokens.toHex());
-  assert.fieldEquals('Bond__RewardDebt', rewardDebtId, 'rewardDebt', rewardDebt.toString());
+  assert.fieldEquals(
+    'Bond__RewardDebt',
+    rewardDebtId,
+    'rewardDebt',
+    rewardDebt.toString()
+  );
 
   clearStore();
 });
 
-// -  RewardTimeLockUpdate(indexed address,uint256,indexed address)
+// - RewardTimeLockUpdate(indexed address,uint256,indexed address)
 test('Will handle RewardTimeLockUpdate event', () => {
   const instigator = Address.fromString('0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266');
   const tokens = Address.fromString('0x8626f6940e2eb28930efb4cef49b2d1f2c9c1199');
@@ -623,7 +636,7 @@ test('Will handle RewardTimeLockUpdate event', () => {
   clearStore();
 });
 
-// -  SlashDeposits(indexed address,uint256,string,indexed address)
+// - SlashDeposits(indexed address,uint256,string,indexed address)
 test('Will handle SlashDeposits event', () => {
   const instigator = Address.fromString('0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266');
   const tokens = Address.fromString('0x8626f6940e2eb28930efb4cef49b2d1f2c9c1199');
@@ -673,7 +686,7 @@ test('Will handle SlashDeposits event', () => {
   clearStore();
 });
 
-// -  Transfer(indexed address,indexed address,uint256)
+// - Transfer(indexed address,indexed address,uint256)
 test('Will handle Transfer event', () => {
   const instigator = Address.fromString('0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266');
   const from = Address.fromString('0x70997970c51812dc3a010c7d01b50e0d17dc79c8');
@@ -714,7 +727,7 @@ test('Will handle Transfer event', () => {
   clearStore();
 });
 
-// -  Unpaused(address)
+// - Unpaused(address)
 test('Will handle Unpaused event', () => {
   const instigator = Address.fromString('0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266');
 
@@ -743,7 +756,7 @@ test('Will handle Unpaused event', () => {
   clearStore();
 });
 
-// -  WithdrawCollateral(indexed address,indexed address,uint256,indexed address)
+// - WithdrawCollateral(indexed address,indexed address,uint256,indexed address)
 const withdrawCollateral = (
   treasury: Address,
   tokens: Address,
