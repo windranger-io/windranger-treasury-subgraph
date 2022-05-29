@@ -27,8 +27,9 @@ export function handleStakingPoolCreated(event: StakingPoolCreated): void {
       : stakingPoolFactory;
 
   stakingPoolFactory.factory = event.address;
-  
-  stakingPoolFactory.createdAtTimestamp = stakingPoolFactory.createdAtTimestamp || event.block.timestamp;
+
+  stakingPoolFactory.createdAtTimestamp =
+    stakingPoolFactory.createdAtTimestamp || event.block.timestamp;
   stakingPoolFactory.lastUpdatedTimestamp = event.block.timestamp;
 
   stakingPoolFactory.save();
@@ -50,7 +51,8 @@ export function handleStakingPoolCreated(event: StakingPoolCreated): void {
   stakingPool.rewardType = event.params.rewardType;
   stakingPool.factory = stakingPoolFactory.id;
 
-  stakingPool.createdAtTimestamp = stakingPool.createdAtTimestamp || event.block.timestamp;
+  stakingPool.createdAtTimestamp =
+    stakingPool.createdAtTimestamp || event.block.timestamp;
   stakingPool.lastUpdatedTimestamp = event.block.timestamp;
 
   stakingPool.save();
@@ -67,7 +69,8 @@ export function handleStakingPoolCreated(event: StakingPoolCreated): void {
     poolReward.maxAmount = reward.maxAmount;
     poolReward.ratio = reward.ratio;
 
-    poolReward.createdAtTimestamp = poolReward.createdAtTimestamp || event.block.timestamp;
+    poolReward.createdAtTimestamp =
+      poolReward.createdAtTimestamp || event.block.timestamp;
     poolReward.lastUpdatedTimestamp = event.block.timestamp;
 
     poolReward.save();
