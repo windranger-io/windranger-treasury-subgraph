@@ -113,7 +113,7 @@ export function handleInitializeRewards(event: InitializeRewards): void {
 
   stakingPool.lastUpdatedTimestamp = event.block.timestamp;
 
-  stakingPool.save()
+  stakingPool.save();
 
   // --
 

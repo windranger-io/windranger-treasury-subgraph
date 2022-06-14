@@ -24,7 +24,22 @@ type BondMediator @entity {
   
   roles: [Role!]! @derivedFrom(field: "mediator")
 
+  sweeps: [BondMediator__Sweep!]! @derivedFrom(field: "mediator")
+
   lastUpdatedTimestamp: BigInt!
+  createdAtTimestamp: BigInt!
+}
+
+# id = `${transactionHash.toHex()}-${logIndex.toHex()}`;
+type BondMediator__Sweep @entity {
+  id: ID!
+
+  token: Bytes!
+  amount: BigInt!
+  beneficiary: Bytes!
+
+  mediator: BondMediator!
+
   createdAtTimestamp: BigInt!
 }
 
@@ -145,6 +160,7 @@ type Bond @entity {
   deposits: [Bond__Deposit!]! @derivedFrom(field: "bond")
   slashedDeposits: [Bond__SlashDeposit!]! @derivedFrom(field: "bond")
   transfers: [Bond__Transfer!]! @derivedFrom(field: "bond")
+  sweeps: [Bond__Sweep!]! @derivedFrom(field: "bond")
 
   isRedeemable: Boolean!
   redeemableReason: String!
@@ -207,6 +223,19 @@ type Bond__RewardPool @entity {
   createdAtTimestamp: BigInt!
 }
 
+# id = `${transactionHash.toHex()}-${logIndex.toHex()}`;
+type Bond__Sweep @entity {
+  id: ID!
+
+  bond: Bond!
+
+  token: Bytes!
+  amount: BigInt!
+  beneficiary: Bytes!
+
+  createdAtTimestamp: BigInt!
+}
+  
 # id = `${bondAddress.toHex()}-${depositor.toHex()}-${collateralTokens.toHex()}`;
 type Bond__Deposit @entity {
   id: ID!

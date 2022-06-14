@@ -9,6 +9,7 @@ import {
   CreateDao,
   DaoMetaDataUpdate,
   DaoTreasuryUpdate,
+  ERC20Sweep,
   GrantDaoRole,
   GrantGlobalRole,
   Paused,
@@ -22,6 +23,7 @@ import {
   Bond,
   BondFactory,
   BondMediator,
+  BondMediator__Sweep as Sweep,
   DAO,
   DAO__CollateralWhitelist as DAOCollateralWhitelist,
   DAO__Metadata as DAOMetadata,
@@ -45,7 +47,7 @@ export function handleAddBond(event: AddBond): void {
   bond.bond = event.params.bond;
   bond.dao = dao.id;
   bond.mediator = bondMediator.id;
-  
+
   bond.createdAtTimestamp = bond.createdAtTimestamp || event.block.timestamp;
   bond.lastUpdatedTimestamp = event.block.timestamp;
 
@@ -72,7 +74,7 @@ export function handleAddCollateralWhitelist(event: AddCollateralWhitelist): voi
 
   whitelist.dao = dao.id;
   whitelist.token = event.params.collateralTokens;
-  whitelist.mediator = bondMediator.id
+  whitelist.mediator = bondMediator.id;
 
   whitelist.createdAtTimestamp = whitelist.createdAtTimestamp || event.block.timestamp;
   whitelist.lastUpdatedTimestamp = event.block.timestamp;
@@ -88,7 +90,8 @@ export function handleAdminChanged(event: AdminChanged): void {
 
   bondMediator.admin = event.params.newAdmin;
 
-  bondMediator.createdAtTimestamp = bondMediator.createdAtTimestamp || event.block.timestamp;
+  bondMediator.createdAtTimestamp =
+    bondMediator.createdAtTimestamp || event.block.timestamp;
   bondMediator.lastUpdatedTimestamp = event.block.timestamp;
 
   bondMediator.save();
@@ -102,7 +105,8 @@ export function handleBeaconUpgraded(event: BeaconUpgraded): void {
 
   bondMediator.beacon = event.params.beacon;
 
-  bondMediator.createdAtTimestamp = bondMediator.createdAtTimestamp || event.block.timestamp;
+  bondMediator.createdAtTimestamp =
+    bondMediator.createdAtTimestamp || event.block.timestamp;
   bondMediator.lastUpdatedTimestamp = event.block.timestamp;
 
   bondMediator.save();
@@ -116,7 +120,8 @@ export function handleBeneficiaryUpdate(event: BeneficiaryUpdate): void {
 
   bondMediator.beneficiary = event.params.beneficiary;
 
-  bondMediator.createdAtTimestamp = bondMediator.createdAtTimestamp || event.block.timestamp;
+  bondMediator.createdAtTimestamp =
+    bondMediator.createdAtTimestamp || event.block.timestamp;
   bondMediator.lastUpdatedTimestamp = event.block.timestamp;
 
   bondMediator.save();
@@ -135,8 +140,9 @@ export function handleBondCreatorUpdate(event: BondCreatorUpdate): void {
       : bondFactory;
 
   bondMediator.factory = bondFactory.id;
-  
-  bondMediator.createdAtTimestamp = bondMediator.createdAtTimestamp || event.block.timestamp;
+
+  bondMediator.createdAtTimestamp =
+    bondMediator.createdAtTimestamp || event.block.timestamp;
   bondMediator.lastUpdatedTimestamp = event.block.timestamp;
 
   bondMediator.save();
@@ -183,14 +189,14 @@ export function handleDaoMetaDataUpdate(event: DaoMetaDataUpdate): void {
 
   dao.lastUpdatedTimestamp = event.block.timestamp;
 
-  dao.save()
+  dao.save();
 
   let metadata = DAOMetadata.load(event.params.daoId.toHex());
   metadata = metadata === null ? new DAOMetadata(event.params.daoId.toHex()) : metadata;
 
   metadata.data = event.params.data;
   metadata.dao = dao.id;
-  metadata.mediator = bondMediator.id
+  metadata.mediator = bondMediator.id;
 
   metadata.createdAtTimestamp = metadata.createdAtTimestamp || event.block.timestamp;
   metadata.lastUpdatedTimestamp = event.block.timestamp;
@@ -211,6 +217,28 @@ export function handleDaoTreasuryUpdate(event: DaoTreasuryUpdate): void {
   dao.save();
 }
 
+// - ERC20Sweep(indexed address,indexed address,uint256,indexed address)
+export function handleERC20Sweep(event: ERC20Sweep): void {
+  const sweepId = `${event.transaction.hash.toHex()}-${event.logIndex.toHex()}`;
+
+  let bondMediator = BondMediator.load(event.address.toHex());
+  bondMediator =
+    bondMediator === null ? new BondMediator(event.address.toHex()) : bondMediator;
+
+  let sweep = Sweep.load(sweepId);
+  sweep = sweep === null ? new Sweep(sweepId) : sweep;
+
+  sweep.token = event.params.tokens;
+  sweep.amount = event.params.amount;
+  sweep.beneficiary = event.params.beneficiary;
+
+  sweep.mediator = bondMediator.id;
+
+  sweep.createdAtTimestamp = event.block.timestamp;
+
+  sweep.save();
+}
+
 // - GrantDaoRole(indexed uint256,indexed bytes32,address,indexed address)
 export function handleGrantDaoRole(event: GrantDaoRole): void {
   const roleId = `${event.params.daoId.toHex()}-${event.params.role.toHex()}-${event.params.account.toHex()}`;
@@ -226,7 +254,7 @@ export function handleGrantDaoRole(event: GrantDaoRole): void {
   role = role === null ? new DAORole(roleId) : role;
 
   role.dao = dao.id;
-  role.mediator = bondMediator.id
+  role.mediator = bondMediator.id;
   role.role = event.params.role;
   role.account = event.params.account;
 
@@ -247,7 +275,7 @@ export function handleGrantGlobalRole(event: GrantGlobalRole): void {
   let role = Role.load(roleId);
   role = role === null ? new Role(roleId) : role;
 
-  role.mediator = bondMediator.id
+  role.mediator = bondMediator.id;
   role.role = event.params.indexedrole;
   role.account = event.params.account;
 
@@ -265,7 +293,8 @@ export function handlePaused(event: Paused): void {
 
   bondMediator.paused = true;
 
-  bondMediator.createdAtTimestamp = bondMediator.createdAtTimestamp || event.block.timestamp;
+  bondMediator.createdAtTimestamp =
+    bondMediator.createdAtTimestamp || event.block.timestamp;
   bondMediator.lastUpdatedTimestamp = event.block.timestamp;
 
   bondMediator.save();
@@ -280,8 +309,8 @@ export function handleRemoveCollateralWhitelist(event: RemoveCollateralWhitelist
 
   dao.lastUpdatedTimestamp = event.block.timestamp;
 
-  dao.save()
-  
+  dao.save();
+
   let whitelist = DAOCollateralWhitelist.load(whitelistId);
   whitelist = whitelist === null ? new DAOCollateralWhitelist(whitelistId) : whitelist;
 
@@ -316,7 +345,8 @@ export function handleUnpaused(event: Unpaused): void {
 
   bondMediator.paused = false;
 
-  bondMediator.createdAtTimestamp = bondMediator.createdAtTimestamp || event.block.timestamp;
+  bondMediator.createdAtTimestamp =
+    bondMediator.createdAtTimestamp || event.block.timestamp;
   bondMediator.lastUpdatedTimestamp = event.block.timestamp;
 
   bondMediator.save();
@@ -330,7 +360,8 @@ export function handleUpgraded(event: Upgraded): void {
 
   bondMediator.implementation = event.params.implementation;
 
-  bondMediator.createdAtTimestamp = bondMediator.createdAtTimestamp || event.block.timestamp;
+  bondMediator.createdAtTimestamp =
+    bondMediator.createdAtTimestamp || event.block.timestamp;
   bondMediator.lastUpdatedTimestamp = event.block.timestamp;
 
   bondMediator.save();

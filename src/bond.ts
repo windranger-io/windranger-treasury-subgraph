@@ -3,6 +3,7 @@ import {
   Bond,
   Bond__Metadata as Metadata,
   Bond__Deposit as Deposit,
+  Bond__Sweep as Sweep,
   Bond__Redemption as Redemption,
   Bond__RewardDebt as RewardDebt,
   Bond__RewardClaimed as RewardClaimed,
@@ -116,15 +117,37 @@ export function handleDeposit(event: DepositFilter): void {
 
 // - ERC20Sweep(indexed address,indexed address,uint256,indexed address)
 export function handleERC20Sweep(event: ERC20Sweep): void {
+  const sweepId = `${event.transaction.hash.toHex()}-${event.logIndex.toHex()}`;
+
   let bond = Bond.load(event.address.toHex());
   bond = bond === null ? new Bond(event.address.toHex()) : bond;
 
-  const collateralAmount: BigInt = bond.collateralAmount || BigInt.fromI32(0);
-  bond.collateralAmount = collateralAmount.minus(event.params.amount);
+  // eslint-disable-next-line eqeqeq
+  const sweepCollateral = event.params.tokens.toHex() == bond.collateralTokens.toHex();
+
+  if (sweepCollateral) {
+    const collateralAmount: BigInt = bond.collateralAmount || BigInt.fromI32(0);
+    bond.collateralAmount = collateralAmount.minus(event.params.amount);
+  }
 
   bond.lastUpdatedTimestamp = event.block.timestamp;
 
   bond.save();
+
+  // --
+
+  let sweep = Sweep.load(sweepId);
+  sweep = sweep === null ? new Sweep(sweepId) : sweep;
+
+  sweep.bond = bond.id;
+
+  sweep.token = event.params.tokens;
+  sweep.amount = event.params.amount;
+  sweep.beneficiary = event.params.beneficiary;
+
+  sweep.createdAtTimestamp = event.block.timestamp;
+
+  sweep.save();
 }
 
 // - Expire(indexed address,indexed address,uint256,indexed address)
@@ -162,7 +185,7 @@ export function handleMetaDataUpdate(event: MetaDataUpdate): void {
 
   bond.lastUpdatedTimestamp = event.block.timestamp;
 
-  bond.save()
+  bond.save();
 
   let metadata = Metadata.load(event.address.toHex());
   metadata = metadata === null ? new Metadata(event.address.toHex()) : metadata;
@@ -292,7 +315,7 @@ export function handleRegisterReward(event: RegisterReward): void {
   bond.save();
 
   // --
-  
+
   rewardPool.bond = bond.id;
   rewardPool.amount = event.params.amount;
   rewardPool.timeLock = event.params.timeLock;
@@ -340,15 +363,15 @@ export function handleRewardTimeLockUpdate(event: RewardTimeLockUpdate): void {
   bond = bond === null ? new Bond(event.address.toHex()) : bond;
 
   bond.lastUpdatedTimestamp = event.block.timestamp;
-  
+
   bond.save();
-  
-  // -- 
+
+  // --
 
   rewardPool = rewardPool === null ? new RewardPool(rewardPoolId) : rewardPool;
 
   rewardPool.timeLock = event.params.timeLock;
-  
+
   rewardPool.lastUpdatedTimestamp = event.block.timestamp;
 
   rewardPool.save();

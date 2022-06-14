@@ -17,6 +17,7 @@ dataSources:
         - Bond
         - BondFactory
         - BondMediator
+        - BondMediator__Sweep
         - DAO
         - DAO__CollateralWhitelist
         - DAO__Metadata
@@ -181,6 +182,7 @@ templates:
         - Bond__RewardDebt
         - Bond__RewardPool
         - Bond__SlashDeposit
+        - Bond__Sweep
         - Bond__Transfer
       abis:
         - name: SingleCollateralMultiRewardBond
