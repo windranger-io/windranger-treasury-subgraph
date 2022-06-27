@@ -1,28 +1,42 @@
-import { BigInt, store } from '@graphprotocol/graph-ts';
+import { BigInt } from '@graphprotocol/graph-ts';
+
 import {
-  DAO,
-  DAO__Role as DAORole,
-  Role,
   StakingPool,
   StakingPool__Deposit as StakingPoolDeposit,
   StakingPool__Withdrawal as StakingPoolWithdrawl,
   StakingPool__Reward as StakingPoolReward,
-  StakingPool__RewardWithdrawal as StakingPoolRewardWithdrawal
+  StakingPool__RewardWithdrawal as StakingPoolRewardWithdrawal,
+  StakingPool__Sweep as Sweep
 } from '../generated/schema';
+
 import {
+  BeneficiaryUpdate,
   Deposit as DepositFilter,
   EmergencyMode,
-  GrantDaoRole,
-  GrantGlobalRole,
+  ERC20Sweep,
   InitializeRewards,
+  OwnershipTransferred,
   Paused,
-  RevokeDaoRole,
-  RevokeGlobalRole,
   RewardsAvailableTimestamp,
   Unpaused,
   WithdrawRewards,
   WithdrawStake
 } from '../generated/templates/StakingPool/StakingPool';
+
+// - BeneficiaryUpdate(indexed address,indexed address)
+export function handleBeneficiaryUpdate(event: BeneficiaryUpdate): void {
+  let stakingPool = StakingPool.load(event.address.toHex());
+  stakingPool =
+    stakingPool === null ? new StakingPool(event.address.toHex()) : stakingPool;
+
+  stakingPool.beneficiary = event.params.beneficiary;
+
+  stakingPool.createdAtTimestamp =
+    stakingPool.createdAtTimestamp || event.block.timestamp;
+  stakingPool.lastUpdatedTimestamp = event.block.timestamp;
+
+  stakingPool.save();
+}
 
 // - Deposit(indexed address,uint256)
 export function handleDeposit(event: DepositFilter): void {
@@ -56,6 +70,34 @@ export function handleDeposit(event: DepositFilter): void {
   deposit.save();
 }
 
+// - ERC20Sweep(indexed address,indexed address,uint256,indexed address)
+export function handleERC20Sweep(event: ERC20Sweep): void {
+  const sweepId = `${event.transaction.hash.toHex()}-${event.logIndex.toHex()}`;
+
+  let stakingpool = StakingPool.load(event.address.toHex());
+  stakingpool =
+    stakingpool === null ? new StakingPool(event.address.toHex()) : stakingpool;
+
+  stakingpool.lastUpdatedTimestamp = event.block.timestamp;
+
+  stakingpool.save();
+
+  // --
+
+  let sweep = Sweep.load(sweepId);
+  sweep = sweep === null ? new Sweep(sweepId) : sweep;
+
+  sweep.pool = stakingpool.id;
+
+  sweep.token = event.params.tokens;
+  sweep.amount = event.params.amount;
+  sweep.beneficiary = event.params.beneficiary;
+
+  sweep.createdAtTimestamp = event.block.timestamp;
+
+  sweep.save();
+}
+
 // - EmergencyMode(indexed address)
 export function handleEmergencyMode(event: EmergencyMode): void {
   let stakingPool = StakingPool.load(event.address.toHex());
@@ -67,42 +109,6 @@ export function handleEmergencyMode(event: EmergencyMode): void {
   stakingPool.lastUpdatedTimestamp = event.block.timestamp;
 
   stakingPool.save();
-}
-
-// - GrantDaoRole(indexed uint256,indexed bytes32,address,indexed address)
-export function handleGrantDaoRole(event: GrantDaoRole): void {
-  const roleId = `${event.params.daoId.toHex()}-${event.params.role.toHex()}-${event.params.account.toHex()}`;
-
-  let dao = DAO.load(event.params.daoId.toHex());
-  dao = dao === null ? new DAO(event.params.daoId.toHex()) : dao;
-
-  let role = DAORole.load(roleId);
-  role = role === null ? new DAORole(roleId) : role;
-
-  role.dao = dao.id;
-  role.role = event.params.role;
-  role.account = event.params.account;
-
-  role.createdAtTimestamp = role.createdAtTimestamp || event.block.timestamp;
-  role.lastUpdatedTimestamp = event.block.timestamp;
-
-  role.save();
-}
-
-// - GrantGlobalRole(bytes32,address,indexed address)
-export function handleGrantGlobalRole(event: GrantGlobalRole): void {
-  const roleId = `${event.params.indexedrole.toHex()}-${event.params.account.toHex()}`;
-
-  let role = Role.load(roleId);
-  role = role === null ? new Role(roleId) : role;
-
-  role.role = event.params.indexedrole;
-  role.account = event.params.account;
-
-  role.createdAtTimestamp = role.createdAtTimestamp || event.block.timestamp;
-  role.lastUpdatedTimestamp = event.block.timestamp;
-
-  role.save();
 }
 
 // - InitializeRewards(address,uint256)
@@ -132,6 +138,21 @@ export function handleInitializeRewards(event: InitializeRewards): void {
   reward.save();
 }
 
+// - OwnershipTransferred(indexed address,indexed address)
+export function handleOwnershipTransferred(event: OwnershipTransferred): void {
+  let stakingPool = StakingPool.load(event.address.toHex());
+  stakingPool =
+    stakingPool === null ? new StakingPool(event.address.toHex()) : stakingPool;
+
+  stakingPool.owner = event.params.newOwner;
+
+  stakingPool.createdAtTimestamp =
+    stakingPool.createdAtTimestamp || event.block.timestamp;
+  stakingPool.lastUpdatedTimestamp = event.block.timestamp;
+
+  stakingPool.save();
+}
+
 // - Paused(address)
 export function handlePaused(event: Paused): void {
   let stakingPool = StakingPool.load(event.address.toHex());
@@ -143,26 +164,6 @@ export function handlePaused(event: Paused): void {
   stakingPool.lastUpdatedTimestamp = event.block.timestamp;
 
   stakingPool.save();
-}
-
-// - RevokeDaoRole(indexed uint256,indexed bytes32,address,indexed address)
-export function handleRevokeDaoRole(event: RevokeDaoRole): void {
-  const roleId = `${event.params.daoId.toHex()}-${event.params.role.toHex()}-${event.params.account.toHex()}`;
-
-  let role = DAORole.load(roleId);
-  role = role === null ? new DAORole(roleId) : role;
-
-  store.remove('DAO__Role', role.id);
-}
-
-// - RevokeGlobalRole(indexed bytes32,address,indexed address)
-export function handleRevokeGlobalRole(event: RevokeGlobalRole): void {
-  const roleId = `${event.params.role.toHex()}-${event.params.account.toHex()}`;
-
-  let role = Role.load(roleId);
-  role = role === null ? new Role(roleId) : role;
-
-  store.remove('Role', role.id);
 }
 
 // - RewardsAvailableTimestamp(uint32)

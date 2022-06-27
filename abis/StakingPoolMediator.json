@@ -11,7 +11,7 @@
       {
         "indexed": true,
         "internalType": "address",
-        "name": "bond",
+        "name": "collateralTokens",
         "type": "address"
       },
       {
@@ -21,7 +21,7 @@
         "type": "address"
       }
     ],
-    "name": "AddBond",
+    "name": "AddCollateralWhitelist",
     "type": "event"
   },
   {
@@ -36,7 +36,7 @@
       {
         "indexed": true,
         "internalType": "address",
-        "name": "collateralTokens",
+        "name": "stakingPool",
         "type": "address"
       },
       {
@@ -46,7 +46,7 @@
         "type": "address"
       }
     ],
-    "name": "AddCollateralWhitelist",
+    "name": "AddStakingPool",
     "type": "event"
   },
   {
@@ -98,31 +98,6 @@
       }
     ],
     "name": "BeneficiaryUpdate",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "previousCreator",
-        "type": "address"
-      },
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "updateCreator",
-        "type": "address"
-      },
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "instigator",
-        "type": "address"
-      }
-    ],
-    "name": "BondCreatorUpdate",
     "type": "event"
   },
   {
@@ -398,6 +373,31 @@
     "anonymous": false,
     "inputs": [
       {
+        "indexed": true,
+        "internalType": "address",
+        "name": "previousCreator",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "updateCreator",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "instigator",
+        "type": "address"
+      }
+    ],
+    "name": "StakingPoolCreatorUpdate",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
         "indexed": false,
         "internalType": "address",
         "name": "account",
@@ -436,269 +436,6 @@
   {
     "inputs": [
       {
-        "internalType": "uint256",
-        "name": "daoId",
-        "type": "uint256"
-      },
-      {
-        "internalType": "address",
-        "name": "bond",
-        "type": "address"
-      },
-      {
-        "internalType": "string",
-        "name": "reason",
-        "type": "string"
-      }
-    ],
-    "name": "bondAllowRedemption",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "daoId",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "index",
-        "type": "uint256"
-      }
-    ],
-    "name": "bondAt",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "daoId",
-        "type": "uint256"
-      }
-    ],
-    "name": "bondCount",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "bondCreator",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "daoId",
-        "type": "uint256"
-      },
-      {
-        "internalType": "address",
-        "name": "bond",
-        "type": "address"
-      }
-    ],
-    "name": "bondPause",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "daoId",
-        "type": "uint256"
-      },
-      {
-        "internalType": "address",
-        "name": "bond",
-        "type": "address"
-      },
-      {
-        "internalType": "string",
-        "name": "data",
-        "type": "string"
-      }
-    ],
-    "name": "bondSetMetaData",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "daoId",
-        "type": "uint256"
-      },
-      {
-        "internalType": "address",
-        "name": "bond",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "replacement",
-        "type": "address"
-      }
-    ],
-    "name": "bondSetTreasury",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "daoId",
-        "type": "uint256"
-      },
-      {
-        "internalType": "address",
-        "name": "bond",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
-      },
-      {
-        "internalType": "string",
-        "name": "reason",
-        "type": "string"
-      }
-    ],
-    "name": "bondSlash",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "daoId",
-        "type": "uint256"
-      },
-      {
-        "internalType": "address",
-        "name": "bond",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "tokens",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
-      }
-    ],
-    "name": "bondSweepERC20Tokens",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "daoId",
-        "type": "uint256"
-      },
-      {
-        "internalType": "address",
-        "name": "bond",
-        "type": "address"
-      }
-    ],
-    "name": "bondUnpause",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "daoId",
-        "type": "uint256"
-      },
-      {
-        "internalType": "address",
-        "name": "bond",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "tokens",
-        "type": "address"
-      },
-      {
-        "internalType": "uint128",
-        "name": "timeLock",
-        "type": "uint128"
-      }
-    ],
-    "name": "bondUpdateRewardTimeLock",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "daoId",
-        "type": "uint256"
-      },
-      {
-        "internalType": "address",
-        "name": "bond",
-        "type": "address"
-      }
-    ],
-    "name": "bondWithdrawCollateral",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
         "internalType": "address",
         "name": "erc20CapableTreasury",
         "type": "address"
@@ -718,83 +455,91 @@
   {
     "inputs": [
       {
-        "internalType": "uint256",
-        "name": "daoId",
-        "type": "uint256"
-      },
-      {
-        "components": [
-          {
-            "internalType": "string",
-            "name": "name",
-            "type": "string"
-          },
-          {
-            "internalType": "string",
-            "name": "symbol",
-            "type": "string"
-          },
-          {
-            "internalType": "string",
-            "name": "data",
-            "type": "string"
-          }
-        ],
-        "internalType": "struct Bond.MetaData",
-        "name": "metadata",
-        "type": "tuple"
-      },
-      {
         "components": [
           {
             "internalType": "uint256",
-            "name": "debtTokenAmount",
+            "name": "daoId",
             "type": "uint256"
-          },
-          {
-            "internalType": "address",
-            "name": "collateralTokens",
-            "type": "address"
-          },
-          {
-            "internalType": "uint256",
-            "name": "expiryTimestamp",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "minimumDeposit",
-            "type": "uint256"
-          }
-        ],
-        "internalType": "struct Bond.Settings",
-        "name": "configuration",
-        "type": "tuple"
-      },
-      {
-        "components": [
-          {
-            "internalType": "address",
-            "name": "tokens",
-            "type": "address"
           },
           {
             "internalType": "uint128",
-            "name": "amount",
+            "name": "minTotalPoolStake",
             "type": "uint128"
           },
           {
             "internalType": "uint128",
-            "name": "timeLock",
+            "name": "maxTotalPoolStake",
             "type": "uint128"
+          },
+          {
+            "internalType": "uint128",
+            "name": "minimumContribution",
+            "type": "uint128"
+          },
+          {
+            "internalType": "uint32",
+            "name": "epochDuration",
+            "type": "uint32"
+          },
+          {
+            "internalType": "uint32",
+            "name": "epochStartTimestamp",
+            "type": "uint32"
+          },
+          {
+            "internalType": "address",
+            "name": "treasury",
+            "type": "address"
+          },
+          {
+            "internalType": "contract IERC20",
+            "name": "stakeToken",
+            "type": "address"
+          },
+          {
+            "components": [
+              {
+                "internalType": "contract IERC20",
+                "name": "tokens",
+                "type": "address"
+              },
+              {
+                "internalType": "uint256",
+                "name": "maxAmount",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "ratio",
+                "type": "uint256"
+              }
+            ],
+            "internalType": "struct StakingPoolLib.Reward[]",
+            "name": "rewardTokens",
+            "type": "tuple[]"
+          },
+          {
+            "internalType": "enum StakingPoolLib.RewardType",
+            "name": "rewardType",
+            "type": "uint8"
           }
         ],
-        "internalType": "struct Bond.TimeLockRewardPool[]",
-        "name": "rewards",
-        "type": "tuple[]"
+        "internalType": "struct StakingPoolLib.Config",
+        "name": "config",
+        "type": "tuple"
+      },
+      {
+        "internalType": "bool",
+        "name": "launchPaused",
+        "type": "bool"
+      },
+      {
+        "internalType": "uint32",
+        "name": "rewardsAvailableTimestamp",
+        "type": "uint32"
       }
     ],
-    "name": "createManagedBond",
+    "name": "createManagedStakingPool",
     "outputs": [
       {
         "internalType": "address",
@@ -1111,7 +856,7 @@
   {
     "inputs": [
       {
-        "internalType": "address",
+        "internalType": "contract StakingPoolCreator",
         "name": "factory",
         "type": "address"
       },
@@ -1192,24 +937,6 @@
       },
       {
         "internalType": "address",
-        "name": "erc20CollateralTokens",
-        "type": "address"
-      }
-    ],
-    "name": "removeWhitelistedCollateral",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "daoId",
-        "type": "uint256"
-      },
-      {
-        "internalType": "address",
         "name": "account",
         "type": "address"
       }
@@ -1279,37 +1006,6 @@
   {
     "inputs": [
       {
-        "internalType": "address",
-        "name": "factory",
-        "type": "address"
-      }
-    ],
-    "name": "setBondCreator",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "daoId",
-        "type": "uint256"
-      },
-      {
-        "internalType": "string",
-        "name": "replacement",
-        "type": "string"
-      }
-    ],
-    "name": "setDaoMetaData",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
         "internalType": "uint256",
         "name": "daoId",
         "type": "uint256"
@@ -1321,6 +1017,266 @@
       }
     ],
     "name": "setDaoTreasury",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "factory",
+        "type": "address"
+      }
+    ],
+    "name": "setStakingPoolCreator",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "daoId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "stakingPool",
+        "type": "address"
+      }
+    ],
+    "name": "stakingPoolAdminEmergencyRewardSweep",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "daoId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "index",
+        "type": "uint256"
+      }
+    ],
+    "name": "stakingPoolAt",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "daoId",
+        "type": "uint256"
+      }
+    ],
+    "name": "stakingPoolCount",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "stakingPoolCreator",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "daoId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "stakingPool",
+        "type": "address"
+      }
+    ],
+    "name": "stakingPoolEnableEmergencyMode",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "daoId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "stakingPool",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "benefactor",
+        "type": "address"
+      },
+      {
+        "components": [
+          {
+            "internalType": "contract IERC20",
+            "name": "tokens",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "maxAmount",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "ratio",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct StakingPoolLib.Reward[]",
+        "name": "rewards",
+        "type": "tuple[]"
+      }
+    ],
+    "name": "stakingPoolInitializeRewardTokens",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "daoId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "stakingPool",
+        "type": "address"
+      }
+    ],
+    "name": "stakingPoolPause",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "daoId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "stakingPool",
+        "type": "address"
+      },
+      {
+        "internalType": "uint32",
+        "name": "timestamp",
+        "type": "uint32"
+      }
+    ],
+    "name": "stakingPoolSetRewardsAvailableTimestamp",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "daoId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "stakingPool",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "tokens",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "stakingPoolSweepERC20Tokens",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "daoId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "stakingPool",
+        "type": "address"
+      }
+    ],
+    "name": "stakingPoolUnpause",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "daoId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "stakingPool",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "newBeneficiary",
+        "type": "address"
+      }
+    ],
+    "name": "stakingPoolUpdateTokenSweepBeneficiary",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

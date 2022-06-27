@@ -1,17 +1,21 @@
 import {
-  BondFactory,
   Bond,
   Bond__Metadata as Metadata,
   Bond__Configuration as Configuration,
-  Bond__RewardPool as RewardPool
+  Bond__RewardPool as RewardPool,
+  BondFactory,
+  BondFactory__Sweep as Sweep
 } from '../generated/schema';
+
 import {
   BeneficiaryUpdate,
   CreateBond,
+  ERC20Sweep,
   OwnershipTransferred,
   Paused,
   Unpaused
 } from '../generated/BondFactory/BondFactory';
+
 import { SingleCollateralMultiRewardBond as SingleCollateralMultiRewardBondTemplate } from '../generated/templates';
 
 // - CreateBond(indexed address,(string,string,string),(uint256,address,uint256,uint256),(address,uint128,uint128)[],indexed address,indexed address)
@@ -106,6 +110,28 @@ export function handleBeneficiaryUpdate(event: BeneficiaryUpdate): void {
   bondFactory.lastUpdatedTimestamp = event.block.timestamp;
 
   bondFactory.save();
+}
+
+// - ERC20Sweep(indexed address,indexed address,uint256,indexed address)
+export function handleERC20Sweep(event: ERC20Sweep): void {
+  const sweepId = `${event.transaction.hash.toHex()}-${event.logIndex.toHex()}`;
+
+  let bondFactory = BondFactory.load(event.address.toHex());
+  bondFactory =
+    bondFactory === null ? new BondFactory(event.address.toHex()) : bondFactory;
+
+  let sweep = Sweep.load(sweepId);
+  sweep = sweep === null ? new Sweep(sweepId) : sweep;
+
+  sweep.token = event.params.tokens;
+  sweep.amount = event.params.amount;
+  sweep.beneficiary = event.params.beneficiary;
+
+  sweep.factory = bondFactory.id;
+
+  sweep.createdAtTimestamp = event.block.timestamp;
+
+  sweep.save();
 }
 
 // - OwnershipTransferred(indexed address,indexed address)

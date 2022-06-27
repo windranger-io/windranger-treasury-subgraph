@@ -4,6 +4,7 @@ import { assert, clearStore, test } from 'matchstick-as/assembly/index';
 import {
   BOND_FACTORY_ADDRESS,
   createBondFactory,
+  defaultAddress,
   defaultBigInt,
   defaultLogType,
   newBlock,
@@ -13,13 +14,16 @@ import {
 import {
   BeneficiaryUpdate,
   CreateBond,
+  ERC20Sweep,
   OwnershipTransferred,
   Paused,
   Unpaused
 } from '../generated/BondFactory/BondFactory';
+
 import {
   handleBeneficiaryUpdate,
   handleCreateBond,
+  handleERC20Sweep,
   handleOwnershipTransferred,
   handlePaused,
   handleUnpaused
@@ -182,6 +186,49 @@ test('Will handle BeneficiaryUpdate event', () => {
   clearStore();
 });
 
+// - ERC20Sweep(indexed address,indexed address,uint256,indexed address)
+test('Will handle ERC20Sweep event', () => {
+  const instigator = Address.fromString('0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266');
+  const beneficiary = Address.fromString('0x70997970c51812dc3a010c7d01b50e0d17dc79c8');
+  const tokens = Address.fromString('0x8626f6940e2eb28930efb4cef49b2d1f2c9c1199');
+  const amount = 100;
+
+  const sweepId = `${defaultAddress.toHex()}-${defaultBigInt.toHex()}`;
+
+  createBondFactory();
+
+  handleERC20Sweep(
+    new ERC20Sweep(
+      Address.fromString(BOND_FACTORY_ADDRESS),
+      defaultBigInt,
+      defaultBigInt,
+      defaultLogType,
+      newBlock(),
+      newTransaction(instigator.toHex()),
+      [
+        new ethereum.EventParam('beneficiary', ethereum.Value.fromAddress(beneficiary)),
+        new ethereum.EventParam('tokens', ethereum.Value.fromAddress(tokens)),
+        new ethereum.EventParam('amount', ethereum.Value.fromI32(amount)),
+        new ethereum.EventParam('instigator', ethereum.Value.fromAddress(instigator))
+      ],
+      null
+    )
+  );
+
+  assert.fieldEquals('BondFactory', BOND_FACTORY_ADDRESS, 'sweeps', `[${sweepId}]`);
+
+  assert.fieldEquals('BondFactory__Sweep', sweepId, 'amount', `${amount}`);
+  assert.fieldEquals('BondFactory__Sweep', sweepId, 'token', `${tokens.toHex()}`);
+  assert.fieldEquals(
+    'BondFactory__Sweep',
+    sweepId,
+    'beneficiary',
+    `${beneficiary.toHex()}`
+  );
+
+  clearStore();
+});
+
 // - OwnershipTransferred(indexed address,indexed address)
 test('Will handle OwnershipTransferred event', () => {
   const newOwner = Address.fromString('0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266');
@@ -243,7 +290,7 @@ test('Will handle Paused event', () => {
 });
 
 // - Unpaused(address)
-test('Will handle Paused event', () => {
+test('Will handle Unpaused event', () => {
   const bondFactory = createBondFactory();
   bondFactory.paused = true;
   bondFactory.save();
