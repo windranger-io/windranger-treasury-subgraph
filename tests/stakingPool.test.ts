@@ -1,13 +1,10 @@
-import { Address, BigInt, Bytes, ethereum } from '@graphprotocol/graph-ts';
+import { Address, BigInt, ethereum } from '@graphprotocol/graph-ts';
 import { assert, clearStore, test } from 'matchstick-as/assembly/index';
-import { Role, DAO__Role as DAORole } from '../generated/schema';
 
 import {
-  createDAO,
   createStakingPool,
   createStakingPoolReward,
-  DAO_ID,
-  DAO_ID_HEX,
+  defaultAddress,
   defaultBigInt,
   defaultLogType,
   newBlock,
@@ -17,33 +14,149 @@ import {
 } from './utils';
 
 import {
+  BeneficiaryUpdate,
   Deposit,
   EmergencyMode,
-  GrantDaoRole,
-  GrantGlobalRole,
+  ERC20Sweep,
   InitializeRewards,
+  OwnershipTransferred,
   Paused,
-  RevokeDaoRole,
-  RevokeGlobalRole,
   RewardsAvailableTimestamp,
   Unpaused,
   WithdrawRewards,
   WithdrawStake
 } from '../generated/templates/StakingPool/StakingPool';
+
 import {
+  handleBeneficiaryUpdate,
   handleDeposit,
   handleEmergencyMode,
-  handleGrantDaoRole,
-  handleGrantGlobalRole,
+  handleERC20Sweep,
   handleInitializeRewards,
+  handleOwnershipTransferred,
   handlePaused,
-  handleRevokeDaoRole,
-  handleRevokeGlobalRole,
   handleRewardsAvailableTimestamp,
   handleUnpaused,
   handleWithdrawRewards,
   handleWithdrawStake
 } from '../src/stakingPool';
+
+// - BeneficiaryUpdate(indexed address,indexed address)
+test('Will handle BeneficiaryUpdate event', () => {
+  const instigatorAddress = Address.fromString(
+    '0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266'
+  );
+  const beneficiaryAddress = Address.fromString(
+    '0x70997970c51812dc3a010c7d01b50e0d17dc79c8'
+  );
+
+  createStakingPool();
+
+  handleBeneficiaryUpdate(
+    new BeneficiaryUpdate(
+      Address.fromString(STAKINGPOOL_ADDRESS),
+      defaultBigInt,
+      defaultBigInt,
+      defaultLogType,
+      newBlock(),
+      newTransaction(instigatorAddress.toHex()),
+      [
+        new ethereum.EventParam(
+          'beneficiary',
+          ethereum.Value.fromAddress(beneficiaryAddress)
+        ),
+        new ethereum.EventParam(
+          'instigator',
+          ethereum.Value.fromAddress(instigatorAddress)
+        )
+      ],
+      null
+    )
+  );
+
+  assert.fieldEquals(
+    'StakingPool',
+    STAKINGPOOL_ADDRESS,
+    'beneficiary',
+    beneficiaryAddress.toHex()
+  );
+
+  clearStore();
+});
+
+// - OwnershipTransferred(indexed address,indexed address)
+test('Will handle OwnershipTransferred event', () => {
+  const newOwner = Address.fromString('0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266');
+  const previousOwner = Address.fromString('0x70997970c51812dc3a010c7d01b50e0d17dc79c8');
+
+  createStakingPool();
+
+  handleOwnershipTransferred(
+    new OwnershipTransferred(
+      Address.fromString(STAKINGPOOL_ADDRESS),
+      defaultBigInt,
+      defaultBigInt,
+      defaultLogType,
+      newBlock(),
+      newTransaction(),
+      [
+        new ethereum.EventParam(
+          'previousOwner',
+          ethereum.Value.fromAddress(previousOwner)
+        ),
+        new ethereum.EventParam('newOwner', ethereum.Value.fromAddress(newOwner))
+      ],
+      null
+    )
+  );
+
+  assert.fieldEquals('StakingPool', STAKINGPOOL_ADDRESS, 'owner', newOwner.toHex());
+
+  clearStore();
+});
+
+// - ERC20Sweep(indexed address,indexed address,uint256,indexed address)
+test('Will handle ERC20Sweep event', () => {
+  const instigator = Address.fromString('0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266');
+  const beneficiary = Address.fromString('0x70997970c51812dc3a010c7d01b50e0d17dc79c8');
+  const tokens = Address.fromString('0x8626f6940e2eb28930efb4cef49b2d1f2c9c1199');
+  const amount = 100;
+
+  const sweepId = `${defaultAddress.toHex()}-${defaultBigInt.toHex()}`;
+
+  createStakingPool();
+
+  handleERC20Sweep(
+    new ERC20Sweep(
+      Address.fromString(STAKINGPOOL_ADDRESS),
+      defaultBigInt,
+      defaultBigInt,
+      defaultLogType,
+      newBlock(),
+      newTransaction(instigator.toHex()),
+      [
+        new ethereum.EventParam('beneficiary', ethereum.Value.fromAddress(beneficiary)),
+        new ethereum.EventParam('tokens', ethereum.Value.fromAddress(tokens)),
+        new ethereum.EventParam('amount', ethereum.Value.fromI32(amount)),
+        new ethereum.EventParam('instigator', ethereum.Value.fromAddress(instigator))
+      ],
+      null
+    )
+  );
+
+  assert.fieldEquals('StakingPool', STAKINGPOOL_ADDRESS, 'sweeps', `[${sweepId}]`);
+
+  assert.fieldEquals('StakingPool__Sweep', sweepId, 'amount', `${amount}`);
+  assert.fieldEquals('StakingPool__Sweep', sweepId, 'token', `${tokens.toHex()}`);
+  assert.fieldEquals(
+    'StakingPool__Sweep',
+    sweepId,
+    'beneficiary',
+    `${beneficiary.toHex()}`
+  );
+
+  clearStore();
+});
 
 // - Deposit(indexed address,uint256)
 test('Will handle Deposit event', () => {
@@ -103,75 +216,6 @@ test('Will handle EmergencyMode event', () => {
   clearStore();
 });
 
-// - GrantDaoRole(indexed uint256,indexed bytes32,address,indexed address)
-test('Will handle GrantDaoRole event', () => {
-  const instigator = Address.fromString('0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266');
-  const account = Address.fromString('0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266');
-  const role = Bytes.fromI32(1);
-
-  createDAO();
-  createStakingPool();
-
-  handleGrantDaoRole(
-    new GrantDaoRole(
-      Address.fromString(STAKINGPOOL_ADDRESS),
-      defaultBigInt,
-      defaultBigInt,
-      defaultLogType,
-      newBlock(),
-      newTransaction(),
-      [
-        new ethereum.EventParam('daoId', ethereum.Value.fromI32(DAO_ID)),
-        new ethereum.EventParam('role', ethereum.Value.fromBytes(role)),
-        new ethereum.EventParam('account', ethereum.Value.fromAddress(account)),
-        new ethereum.EventParam('instigator', ethereum.Value.fromAddress(instigator))
-      ],
-      null
-    )
-  );
-
-  const roleId = `${DAO_ID_HEX}-${role.toHex()}-${account.toHex()}`;
-
-  assert.fieldEquals('DAO__Role', roleId, 'account', account.toHex());
-  assert.fieldEquals('DAO__Role', roleId, 'role', role.toHex());
-
-  clearStore();
-});
-
-// - GrantGlobalRole(bytes32,address,indexed address)
-test('Will handle GrantGlobalRole event', () => {
-  const instigator = Address.fromString('0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266');
-  const account = Address.fromString('0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266');
-  const role = Bytes.fromI32(1);
-
-  createDAO();
-  createStakingPool();
-
-  handleGrantGlobalRole(
-    new GrantGlobalRole(
-      Address.fromString(STAKINGPOOL_ADDRESS),
-      defaultBigInt,
-      defaultBigInt,
-      defaultLogType,
-      newBlock(),
-      newTransaction(instigator.toHex()),
-      [
-        new ethereum.EventParam('indexedrole', ethereum.Value.fromBytes(role)),
-        new ethereum.EventParam('account', ethereum.Value.fromAddress(account)),
-        new ethereum.EventParam('instigator', ethereum.Value.fromAddress(instigator))
-      ],
-      null
-    )
-  );
-
-  const roleId = `${role.toHex()}-${account.toHex()}`;
-
-  assert.fieldEquals('Role', roleId, 'account', account.toHex());
-  assert.fieldEquals('Role', roleId, 'role', role.toHex());
-
-  clearStore();
-});
-
 // - InitializeRewards(address,uint256)
 test('Will handle InitializeRewards event', () => {
   const token = Address.fromString('0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266');
@@ -227,84 +271,6 @@ test('Will handle Paused event', () => {
   );
 
   assert.fieldEquals('StakingPool', STAKINGPOOL_ADDRESS, 'paused', 'true');
-
-  clearStore();
-});
-
-// - RevokeDaoRole(indexed uint256,indexed bytes32,address,indexed address)
-test('Will handle RevokeDaoRole event', () => {
-  const instigator = Address.fromString('0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266');
-  const account = Address.fromString('0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266');
-  const role = Bytes.fromI32(1);
-
-  const dao = createDAO();
-
-  const roleId = `${DAO_ID_HEX}-${role.toHex()}-${account.toHex()}`;
-  const daoRole = new DAORole(roleId);
-
-  daoRole.dao = dao.id;
-  daoRole.role = role;
-  daoRole.account = account;
-
-  daoRole.save();
-
-  assert.fieldEquals('DAO', DAO_ID_HEX, 'roles', `[${roleId}]`);
-
-  handleRevokeDaoRole(
-    new RevokeDaoRole(
-      Address.fromString(STAKINGPOOL_ADDRESS),
-      defaultBigInt,
-      defaultBigInt,
-      defaultLogType,
-      newBlock(),
-      newTransaction(instigator.toHex()),
-      [
-        new ethereum.EventParam('daoId', ethereum.Value.fromI32(DAO_ID)),
-        new ethereum.EventParam('role', ethereum.Value.fromBytes(role)),
-        new ethereum.EventParam('account', ethereum.Value.fromAddress(account)),
-        new ethereum.EventParam('instigator', ethereum.Value.fromAddress(instigator))
-      ],
-      null
-    )
-  );
-
-  assert.notInStore('DAO__Role', roleId);
-
-  clearStore();
-});
-
-// - RevokeGlobalRole(indexed bytes32,address,indexed address)
-test('Will handle RevokeGlobalRole event', () => {
-  const instigator = Address.fromString('0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266');
-  const account = Address.fromString('0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266');
-  const role = Bytes.fromI32(1);
-
-  const roleId = `${role.toHex()}-${account.toHex()}`;
-  const roleEntity = new Role(roleId);
-
-  roleEntity.role = role;
-  roleEntity.account = account;
-
-  roleEntity.save();
-
-  handleRevokeGlobalRole(
-    new RevokeGlobalRole(
-      Address.fromString(STAKINGPOOL_ADDRESS),
-      defaultBigInt,
-      defaultBigInt,
-      defaultLogType,
-      newBlock(),
-      newTransaction(instigator.toHex()),
-      [
-        new ethereum.EventParam('indexedrole', ethereum.Value.fromBytes(role)),
-        new ethereum.EventParam('account', ethereum.Value.fromAddress(account)),
-        new ethereum.EventParam('instigator', ethereum.Value.fromAddress(instigator))
-      ],
-      null
-    )
-  );
-
-  assert.notInStore('Role', roleId);
 
   clearStore();
 });

@@ -9,6 +9,10 @@
       "address": "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",
       "startBlock": 0
     },
+    "stakingPoolMediator": {
+      "address": "0xE8D2bEd7fC319be6D75FeDff3Ca56166850E35d5",
+      "startBlock": 0
+    },
     "stakingPoolFactory": {
       "address": "0x5FC8d32690cc91D4c39d9d3abcBD16989F875707",
       "startBlock": 0

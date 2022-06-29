@@ -1,4 +1,5 @@
 import { BigInt } from '@graphprotocol/graph-ts';
+
 import {
   Bond,
   Bond__Metadata as Metadata,
@@ -11,6 +12,7 @@ import {
   Bond__SlashDeposit as SlashDeposit,
   Bond__Transfer as Transfer
 } from '../generated/schema';
+
 import {
   AllowRedemption,
   BeneficiaryUpdate,

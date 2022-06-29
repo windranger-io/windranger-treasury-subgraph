@@ -1,4 +1,17 @@
 import { store } from '@graphprotocol/graph-ts';
+
+import {
+  Bond,
+  Bond__DAO as DAO,
+  Bond__DAO__CollateralWhitelist as DAOCollateralWhitelist,
+  Bond__DAO__Metadata as DAOMetadata,
+  Bond__DAO__Role as DAORole,
+  Bond__Role as Role,
+  BondFactory,
+  BondMediator,
+  BondMediator__Sweep as Sweep
+} from '../generated/schema';
+
 import {
   AddBond,
   AddCollateralWhitelist,
@@ -19,17 +32,7 @@ import {
   Unpaused,
   Upgraded
 } from '../generated/BondMediator/BondMediator';
-import {
-  Bond,
-  BondFactory,
-  BondMediator,
-  BondMediator__Sweep as Sweep,
-  DAO,
-  DAO__CollateralWhitelist as DAOCollateralWhitelist,
-  DAO__Metadata as DAOMetadata,
-  DAO__Role as DAORole,
-  Role
-} from '../generated/schema';
+
 import { BondFactory as BondFactoryTemplate } from '../generated/templates';
 
 // - AddBond(indexed uint256,indexed address,indexed address)
@@ -314,7 +317,7 @@ export function handleRemoveCollateralWhitelist(event: RemoveCollateralWhitelist
   let whitelist = DAOCollateralWhitelist.load(whitelistId);
   whitelist = whitelist === null ? new DAOCollateralWhitelist(whitelistId) : whitelist;
 
-  store.remove('DAO__CollateralWhitelist', whitelist.id);
+  store.remove('Bond__DAO__CollateralWhitelist', whitelist.id);
 }
 
 // - RevokeDaoRole(indexed uint256,indexed bytes32,address,indexed address)
@@ -324,7 +327,7 @@ export function handleRevokeDaoRole(event: RevokeDaoRole): void {
   let role = DAORole.load(roleId);
   role = role === null ? new DAORole(roleId) : role;
 
-  store.remove('DAO__Role', role.id);
+  store.remove('Bond__DAO__Role', role.id);
 }
 
 // - RevokeGlobalRole(indexed bytes32,address,indexed address)
@@ -334,7 +337,7 @@ export function handleRevokeGlobalRole(event: RevokeGlobalRole): void {
   let role = Role.load(roleId);
   role = role === null ? new Role(roleId) : role;
 
-  store.remove('Role', role.id);
+  store.remove('Bond__Role', role.id);
 }
 
 // - Unpaused(address)

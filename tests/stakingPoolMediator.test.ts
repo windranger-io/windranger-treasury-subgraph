@@ -2,34 +2,34 @@ import { Address, Bytes, ethereum } from '@graphprotocol/graph-ts';
 import { assert, clearStore, test } from 'matchstick-as/assembly/index';
 
 import {
-  BOND_ADDRESS,
-  BOND_MEDIATOR_ADDRESS,
-  createBond,
-  createBondFactory,
-  createBondMediator,
-  createDAO,
+  createStakingPool,
+  createStakingPoolFactory,
+  createStakingPoolMediator,
+  createStakingPoolDAO,
   DAO_ID,
   DAO_ID_HEX,
   defaultAddress,
   defaultBigInt,
   defaultLogType,
   newBlock,
-  newTransaction
+  newTransaction,
+  STAKINGPOOL_MEDIATOR_ADDRESS,
+  STAKINGPOOL_ADDRESS
 } from './utils';
 
 import {
-  Bond__DAO__CollateralWhitelist as DAOCollateralWhitelist,
-  Bond__DAO__Role as DAORole,
-  Bond__Role as Role
+  StakingPool__DAO__CollateralWhitelist as DAOCollateralWhitelist,
+  StakingPool__DAO__Role as DAORole,
+  StakingPool__Role as Role
 } from '../generated/schema';
 
 import {
-  AddBond,
+  AddStakingPool,
   AddCollateralWhitelist,
   AdminChanged,
   BeaconUpgraded,
   BeneficiaryUpdate,
-  BondCreatorUpdate,
+  StakingPoolCreatorUpdate,
   CreateDao,
   DaoMetaDataUpdate,
   DaoTreasuryUpdate,
@@ -42,15 +42,15 @@ import {
   RevokeGlobalRole,
   Unpaused,
   Upgraded
-} from '../generated/BondMediator/BondMediator';
+} from '../generated/StakingPoolMediator/StakingPoolMediator';
 
 import {
-  handleAddBond,
+  handleAddStakingPool,
   handleAddCollateralWhitelist,
   handleAdminChanged,
   handleBeaconUpgraded,
   handleBeneficiaryUpdate,
-  handleBondCreatorUpdate,
+  handleStakingPoolCreatorUpdate,
   handleCreateDao,
   handleDaoMetaDataUpdate,
   handleDaoTreasuryUpdate,
@@ -63,20 +63,20 @@ import {
   handleRevokeGlobalRole,
   handleUnpaused,
   handleUpgraded
-} from '../src/bondMediator';
+} from '../src/stakingPoolMediator';
 
-// - AddBond(indexed uint256,indexed address,indexed address)
-test('Will handle AddBond event', () => {
-  const bondAddress = Address.fromString(BOND_ADDRESS);
+// - AddStakingPool(indexed uint256,indexed address,indexed address)
+test('Will handle AddStakingPool event', () => {
+  const stakingPoolAddress = Address.fromString(STAKINGPOOL_ADDRESS);
   const instigator = Address.fromString('0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266');
 
-  createBondMediator();
-  createDAO();
-  createBond();
+  createStakingPoolMediator();
+  createStakingPoolDAO();
+  createStakingPool();
 
-  handleAddBond(
-    new AddBond(
-      Address.fromString(BOND_MEDIATOR_ADDRESS),
+  handleAddStakingPool(
+    new AddStakingPool(
+      Address.fromString(STAKINGPOOL_MEDIATOR_ADDRESS),
       defaultBigInt,
       defaultBigInt,
       defaultLogType,
@@ -84,18 +84,36 @@ test('Will handle AddBond event', () => {
       newTransaction(instigator.toHex()),
       [
         new ethereum.EventParam('daoId', ethereum.Value.fromI32(DAO_ID)),
-        new ethereum.EventParam('bond', ethereum.Value.fromAddress(bondAddress)),
+        new ethereum.EventParam(
+          'stakingPool',
+          ethereum.Value.fromAddress(stakingPoolAddress)
+        ),
         new ethereum.EventParam('instigator', ethereum.Value.fromAddress(instigator))
       ],
       null
     )
   );
 
-  assert.fieldEquals('Bond', BOND_ADDRESS, 'dao', DAO_ID_HEX);
-  assert.fieldEquals('Bond', BOND_ADDRESS, 'mediator', BOND_MEDIATOR_ADDRESS);
+  assert.fieldEquals('StakingPool', STAKINGPOOL_ADDRESS, 'dao', DAO_ID_HEX);
+  assert.fieldEquals(
+    'StakingPool',
+    STAKINGPOOL_ADDRESS,
+    'mediator',
+    STAKINGPOOL_MEDIATOR_ADDRESS
+  );
 
-  assert.fieldEquals('Bond__DAO', DAO_ID_HEX, 'bonds', `[${BOND_ADDRESS}]`);
-  assert.fieldEquals('BondMediator', BOND_MEDIATOR_ADDRESS, 'bonds', `[${BOND_ADDRESS}]`);
+  assert.fieldEquals(
+    'StakingPool__DAO',
+    DAO_ID_HEX,
+    'stakingPools',
+    `[${STAKINGPOOL_ADDRESS}]`
+  );
+  assert.fieldEquals(
+    'StakingPoolMediator',
+    STAKINGPOOL_MEDIATOR_ADDRESS,
+    'stakingPools',
+    `[${STAKINGPOOL_ADDRESS}]`
+  );
 
   clearStore();
 });
@@ -107,11 +125,11 @@ test('Will handle AddCollateralWhitelist event', () => {
     '0x7B4f352Cd40114f12e82fC675b5BA8C7582FC513'
   );
 
-  createDAO();
+  createStakingPoolDAO();
 
   handleAddCollateralWhitelist(
     new AddCollateralWhitelist(
-      Address.fromString(BOND_MEDIATOR_ADDRESS),
+      Address.fromString(STAKINGPOOL_MEDIATOR_ADDRESS),
       defaultBigInt,
       defaultBigInt,
       defaultLogType,
@@ -131,11 +149,21 @@ test('Will handle AddCollateralWhitelist event', () => {
 
   const whitelistId = `${DAO_ID_HEX}-${treasuryAddress.toHex()}`;
 
-  assert.fieldEquals('Bond__DAO', DAO_ID_HEX, 'collateralWhitelist', `[${whitelistId}]`);
-
-  assert.fieldEquals('Bond__DAO__CollateralWhitelist', whitelistId, 'dao', DAO_ID_HEX);
   assert.fieldEquals(
-    'Bond__DAO__CollateralWhitelist',
+    'StakingPool__DAO',
+    DAO_ID_HEX,
+    'collateralWhitelist',
+    `[${whitelistId}]`
+  );
+
+  assert.fieldEquals(
+    'StakingPool__DAO__CollateralWhitelist',
+    whitelistId,
+    'dao',
+    DAO_ID_HEX
+  );
+  assert.fieldEquals(
+    'StakingPool__DAO__CollateralWhitelist',
     whitelistId,
     'token',
     `${treasuryAddress.toHex()}`
@@ -150,11 +178,11 @@ test('Will handle AdminChanged event', () => {
   const newAdmin = Address.fromString('0x70997970c51812dc3a010c7d01b50e0d17dc79c8');
   const previousAdmin = Address.fromString('0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266');
 
-  createBondMediator();
+  createStakingPoolMediator();
 
   handleAdminChanged(
     new AdminChanged(
-      Address.fromString(BOND_MEDIATOR_ADDRESS),
+      Address.fromString(STAKINGPOOL_MEDIATOR_ADDRESS),
       defaultBigInt,
       defaultBigInt,
       defaultLogType,
@@ -171,7 +199,12 @@ test('Will handle AdminChanged event', () => {
     )
   );
 
-  assert.fieldEquals('BondMediator', BOND_MEDIATOR_ADDRESS, 'admin', newAdmin.toHex());
+  assert.fieldEquals(
+    'StakingPoolMediator',
+    STAKINGPOOL_MEDIATOR_ADDRESS,
+    'admin',
+    newAdmin.toHex()
+  );
 
   clearStore();
 });
@@ -181,11 +214,11 @@ test('Will handle BeaconUpgraded event', () => {
   const instigator = Address.fromString('0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266');
   const beacon = Address.fromString('0x70997970c51812dc3a010c7d01b50e0d17dc79c8');
 
-  createBondMediator();
+  createStakingPoolMediator();
 
   handleBeaconUpgraded(
     new BeaconUpgraded(
-      Address.fromString(BOND_MEDIATOR_ADDRESS),
+      Address.fromString(STAKINGPOOL_MEDIATOR_ADDRESS),
       defaultBigInt,
       defaultBigInt,
       defaultLogType,
@@ -196,7 +229,12 @@ test('Will handle BeaconUpgraded event', () => {
     )
   );
 
-  assert.fieldEquals('BondMediator', BOND_MEDIATOR_ADDRESS, 'beacon', beacon.toHex());
+  assert.fieldEquals(
+    'StakingPoolMediator',
+    STAKINGPOOL_MEDIATOR_ADDRESS,
+    'beacon',
+    beacon.toHex()
+  );
 
   clearStore();
 });
@@ -206,11 +244,11 @@ test('Will handle BeneficiaryUpdate event', () => {
   const instigator = Address.fromString('0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266');
   const beneficiary = Address.fromString('0x70997970c51812dc3a010c7d01b50e0d17dc79c8');
 
-  createBondMediator();
+  createStakingPoolMediator();
 
   handleBeneficiaryUpdate(
     new BeneficiaryUpdate(
-      Address.fromString(BOND_MEDIATOR_ADDRESS),
+      Address.fromString(STAKINGPOOL_MEDIATOR_ADDRESS),
       defaultBigInt,
       defaultBigInt,
       defaultLogType,
@@ -225,8 +263,8 @@ test('Will handle BeneficiaryUpdate event', () => {
   );
 
   assert.fieldEquals(
-    'BondMediator',
-    BOND_MEDIATOR_ADDRESS,
+    'StakingPoolMediator',
+    STAKINGPOOL_MEDIATOR_ADDRESS,
     'beneficiary',
     beneficiary.toHex()
   );
@@ -234,20 +272,20 @@ test('Will handle BeneficiaryUpdate event', () => {
   clearStore();
 });
 
-// - BondCreatorUpdate(indexed address,indexed address,indexed address)
-test('Will handle BondCreatorUpdate event', () => {
+// - StakingPoolCreatorUpdate(indexed address,indexed address,indexed address)
+test('Will handle StakingPoolCreatorUpdate event', () => {
   const instigator = Address.fromString('0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266');
   const prevFactory = Address.fromString('0x70997970c51812dc3a010c7d01b50e0d17dc79c8');
   const factory = Address.fromString('0x70997970c51812dc3a010c7d01b50e0d17dc79c8');
 
-  createBondFactory();
-  createBondMediator();
+  createStakingPoolFactory();
+  createStakingPoolMediator();
 
-  assert.fieldEquals('BondMediator', BOND_MEDIATOR_ADDRESS, 'factory', '');
+  assert.fieldEquals('StakingPoolMediator', STAKINGPOOL_MEDIATOR_ADDRESS, 'factory', '');
 
-  handleBondCreatorUpdate(
-    new BondCreatorUpdate(
-      Address.fromString(BOND_MEDIATOR_ADDRESS),
+  handleStakingPoolCreatorUpdate(
+    new StakingPoolCreatorUpdate(
+      Address.fromString(STAKINGPOOL_MEDIATOR_ADDRESS),
       defaultBigInt,
       defaultBigInt,
       defaultLogType,
@@ -265,10 +303,15 @@ test('Will handle BondCreatorUpdate event', () => {
     )
   );
 
-  assert.fieldEquals('BondMediator', BOND_MEDIATOR_ADDRESS, 'factory', factory.toHex());
   assert.fieldEquals(
-    'BondMediator',
-    BOND_MEDIATOR_ADDRESS,
+    'StakingPoolMediator',
+    STAKINGPOOL_MEDIATOR_ADDRESS,
+    'factory',
+    factory.toHex()
+  );
+  assert.fieldEquals(
+    'StakingPoolMediator',
+    STAKINGPOOL_MEDIATOR_ADDRESS,
     'factories',
     `[${factory.toHex()}]`
   );
@@ -281,11 +324,11 @@ test('Will handle CreateDao event', () => {
   const instigator = Address.fromString('0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266');
   const treasury = Address.fromString('0x70997970c51812dc3a010c7d01b50e0d17dc79c8');
 
-  createBondMediator();
+  createStakingPoolMediator();
 
   handleCreateDao(
     new CreateDao(
-      Address.fromString(BOND_MEDIATOR_ADDRESS),
+      Address.fromString(STAKINGPOOL_MEDIATOR_ADDRESS),
       defaultBigInt,
       defaultBigInt,
       defaultLogType,
@@ -300,8 +343,13 @@ test('Will handle CreateDao event', () => {
     )
   );
 
-  assert.fieldEquals('Bond__DAO', DAO_ID_HEX, 'treasury', treasury.toHex());
-  assert.fieldEquals('BondMediator', BOND_MEDIATOR_ADDRESS, 'daos', `[${DAO_ID_HEX}]`);
+  assert.fieldEquals('StakingPool__DAO', DAO_ID_HEX, 'treasury', treasury.toHex());
+  assert.fieldEquals(
+    'StakingPoolMediator',
+    STAKINGPOOL_MEDIATOR_ADDRESS,
+    'daos',
+    `[${DAO_ID_HEX}]`
+  );
 
   clearStore();
 });
@@ -311,12 +359,12 @@ test('Will handle DaoMetaDataUpdate event', () => {
   const instigator = Address.fromString('0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266');
   const data = 'sample data;';
 
-  createDAO();
-  createBondMediator();
+  createStakingPoolDAO();
+  createStakingPoolMediator();
 
   handleDaoMetaDataUpdate(
     new DaoMetaDataUpdate(
-      Address.fromString(BOND_MEDIATOR_ADDRESS),
+      Address.fromString(STAKINGPOOL_MEDIATOR_ADDRESS),
       defaultBigInt,
       defaultBigInt,
       defaultLogType,
@@ -331,8 +379,8 @@ test('Will handle DaoMetaDataUpdate event', () => {
     )
   );
 
-  assert.fieldEquals('Bond__DAO', DAO_ID_HEX, 'metadata', `[${DAO_ID_HEX}]`);
-  assert.fieldEquals('Bond__DAO__Metadata', DAO_ID_HEX, 'data', data);
+  assert.fieldEquals('StakingPool__DAO', DAO_ID_HEX, 'metadata', `[${DAO_ID_HEX}]`);
+  assert.fieldEquals('StakingPool__DAO__Metadata', DAO_ID_HEX, 'data', data);
 
   clearStore();
 });
@@ -342,12 +390,12 @@ test('Will handle DaoTreasuryUpdate event', () => {
   const instigator = Address.fromString('0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266');
   const treasury = Address.fromString('0x70997970c51812dc3a010c7d01b50e0d17dc79c8');
 
-  createDAO();
-  createBondMediator();
+  createStakingPoolDAO();
+  createStakingPoolMediator();
 
   handleDaoTreasuryUpdate(
     new DaoTreasuryUpdate(
-      Address.fromString(BOND_MEDIATOR_ADDRESS),
+      Address.fromString(STAKINGPOOL_MEDIATOR_ADDRESS),
       defaultBigInt,
       defaultBigInt,
       defaultLogType,
@@ -362,7 +410,7 @@ test('Will handle DaoTreasuryUpdate event', () => {
     )
   );
 
-  assert.fieldEquals('Bond__DAO', DAO_ID_HEX, 'treasury', treasury.toHex());
+  assert.fieldEquals('StakingPool__DAO', DAO_ID_HEX, 'treasury', treasury.toHex());
 
   clearStore();
 });
@@ -376,11 +424,11 @@ test('Will handle ERC20Sweep event', () => {
 
   const sweepId = `${defaultAddress.toHex()}-${defaultBigInt.toHex()}`;
 
-  createBondMediator();
+  createStakingPoolMediator();
 
   handleERC20Sweep(
     new ERC20Sweep(
-      Address.fromString(BOND_MEDIATOR_ADDRESS),
+      Address.fromString(STAKINGPOOL_MEDIATOR_ADDRESS),
       defaultBigInt,
       defaultBigInt,
       defaultLogType,
@@ -396,12 +444,17 @@ test('Will handle ERC20Sweep event', () => {
     )
   );
 
-  assert.fieldEquals('BondMediator', BOND_MEDIATOR_ADDRESS, 'sweeps', `[${sweepId}]`);
-
-  assert.fieldEquals('BondMediator__Sweep', sweepId, 'amount', `${amount}`);
-  assert.fieldEquals('BondMediator__Sweep', sweepId, 'token', `${tokens.toHex()}`);
   assert.fieldEquals(
-    'BondMediator__Sweep',
+    'StakingPoolMediator',
+    STAKINGPOOL_MEDIATOR_ADDRESS,
+    'sweeps',
+    `[${sweepId}]`
+  );
+
+  assert.fieldEquals('StakingPoolMediator__Sweep', sweepId, 'amount', `${amount}`);
+  assert.fieldEquals('StakingPoolMediator__Sweep', sweepId, 'token', `${tokens.toHex()}`);
+  assert.fieldEquals(
+    'StakingPoolMediator__Sweep',
     sweepId,
     'beneficiary',
     `${beneficiary.toHex()}`
@@ -416,12 +469,12 @@ test('Will handle GrantDaoRole event', () => {
   const account = Address.fromString('0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266');
   const role = Bytes.fromI32(1);
 
-  createDAO();
-  createBondMediator();
+  createStakingPoolDAO();
+  createStakingPoolMediator();
 
   handleGrantDaoRole(
     new GrantDaoRole(
-      Address.fromString(BOND_MEDIATOR_ADDRESS),
+      Address.fromString(STAKINGPOOL_MEDIATOR_ADDRESS),
       defaultBigInt,
       defaultBigInt,
       defaultLogType,
@@ -439,10 +492,15 @@ test('Will handle GrantDaoRole event', () => {
 
   const roleId = `${DAO_ID_HEX}-${role.toHex()}-${account.toHex()}`;
 
-  assert.fieldEquals('BondMediator', BOND_MEDIATOR_ADDRESS, 'daoRoles', `[${roleId}]`);
+  assert.fieldEquals(
+    'StakingPoolMediator',
+    STAKINGPOOL_MEDIATOR_ADDRESS,
+    'daoRoles',
+    `[${roleId}]`
+  );
 
-  assert.fieldEquals('Bond__DAO__Role', roleId, 'account', account.toHex());
-  assert.fieldEquals('Bond__DAO__Role', roleId, 'role', role.toHex());
+  assert.fieldEquals('StakingPool__DAO__Role', roleId, 'account', account.toHex());
+  assert.fieldEquals('StakingPool__DAO__Role', roleId, 'role', role.toHex());
 
   clearStore();
 });
@@ -453,12 +511,12 @@ test('Will handle GrantGlobalRole event', () => {
   const account = Address.fromString('0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266');
   const role = Bytes.fromI32(1);
 
-  createDAO();
-  createBondMediator();
+  createStakingPoolDAO();
+  createStakingPoolMediator();
 
   handleGrantGlobalRole(
     new GrantGlobalRole(
-      Address.fromString(BOND_MEDIATOR_ADDRESS),
+      Address.fromString(STAKINGPOOL_MEDIATOR_ADDRESS),
       defaultBigInt,
       defaultBigInt,
       defaultLogType,
@@ -475,10 +533,15 @@ test('Will handle GrantGlobalRole event', () => {
 
   const roleId = `${role.toHex()}-${account.toHex()}`;
 
-  assert.fieldEquals('BondMediator', BOND_MEDIATOR_ADDRESS, 'roles', `[${roleId}]`);
+  assert.fieldEquals(
+    'StakingPoolMediator',
+    STAKINGPOOL_MEDIATOR_ADDRESS,
+    'roles',
+    `[${roleId}]`
+  );
 
-  assert.fieldEquals('Bond__Role', roleId, 'account', account.toHex());
-  assert.fieldEquals('Bond__Role', roleId, 'role', role.toHex());
+  assert.fieldEquals('StakingPool__Role', roleId, 'account', account.toHex());
+  assert.fieldEquals('StakingPool__Role', roleId, 'role', role.toHex());
 
   clearStore();
 });
@@ -487,13 +550,18 @@ test('Will handle GrantGlobalRole event', () => {
 test('Will handle Paused event', () => {
   const instigator = Address.fromString('0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266');
 
-  createBondMediator();
+  createStakingPoolMediator();
 
-  assert.fieldEquals('BondMediator', BOND_MEDIATOR_ADDRESS, 'paused', 'false');
+  assert.fieldEquals(
+    'StakingPoolMediator',
+    STAKINGPOOL_MEDIATOR_ADDRESS,
+    'paused',
+    'false'
+  );
 
   handlePaused(
     new Paused(
-      Address.fromString(BOND_MEDIATOR_ADDRESS),
+      Address.fromString(STAKINGPOOL_MEDIATOR_ADDRESS),
       defaultBigInt,
       defaultBigInt,
       defaultLogType,
@@ -504,7 +572,12 @@ test('Will handle Paused event', () => {
     )
   );
 
-  assert.fieldEquals('BondMediator', BOND_MEDIATOR_ADDRESS, 'paused', 'true');
+  assert.fieldEquals(
+    'StakingPoolMediator',
+    STAKINGPOOL_MEDIATOR_ADDRESS,
+    'paused',
+    'true'
+  );
 
   clearStore();
 });
@@ -516,7 +589,7 @@ test('Will handle RemoveCollateralWhitelist event', () => {
     '0x7B4f352Cd40114f12e82fC675b5BA8C7582FC513'
   );
 
-  const dao = createDAO();
+  const dao = createStakingPoolDAO();
 
   const whitelistId = `${DAO_ID_HEX}-${treasuryAddress.toHex()}`;
   const whitelist = new DAOCollateralWhitelist(whitelistId);
@@ -525,11 +598,16 @@ test('Will handle RemoveCollateralWhitelist event', () => {
 
   whitelist.save();
 
-  assert.fieldEquals('Bond__DAO', DAO_ID_HEX, 'collateralWhitelist', `[${whitelistId}]`);
+  assert.fieldEquals(
+    'StakingPool__DAO',
+    DAO_ID_HEX,
+    'collateralWhitelist',
+    `[${whitelistId}]`
+  );
 
   handleRemoveCollateralWhitelist(
     new RemoveCollateralWhitelist(
-      Address.fromString(BOND_MEDIATOR_ADDRESS),
+      Address.fromString(STAKINGPOOL_MEDIATOR_ADDRESS),
       defaultBigInt,
       defaultBigInt,
       defaultLogType,
@@ -547,8 +625,8 @@ test('Will handle RemoveCollateralWhitelist event', () => {
     )
   );
 
-  assert.fieldEquals('Bond__DAO', DAO_ID_HEX, 'collateralWhitelist', `[]`);
-  assert.notInStore('Bond__DAO__CollateralWhitelist', whitelistId);
+  assert.fieldEquals('StakingPool__DAO', DAO_ID_HEX, 'collateralWhitelist', `[]`);
+  assert.notInStore('StakingPool__DAO__CollateralWhitelist', whitelistId);
 
   clearStore();
 });
@@ -559,7 +637,7 @@ test('Will handle RevokeDaoRole event', () => {
   const account = Address.fromString('0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266');
   const role = Bytes.fromI32(1);
 
-  const dao = createDAO();
+  const dao = createStakingPoolDAO();
 
   const roleId = `${DAO_ID_HEX}-${role.toHex()}-${account.toHex()}`;
   const daoRole = new DAORole(roleId);
@@ -570,11 +648,11 @@ test('Will handle RevokeDaoRole event', () => {
 
   daoRole.save();
 
-  assert.fieldEquals('Bond__DAO', DAO_ID_HEX, 'roles', `[${roleId}]`);
+  assert.fieldEquals('StakingPool__DAO', DAO_ID_HEX, 'roles', `[${roleId}]`);
 
   handleRevokeDaoRole(
     new RevokeDaoRole(
-      Address.fromString(BOND_MEDIATOR_ADDRESS),
+      Address.fromString(STAKINGPOOL_MEDIATOR_ADDRESS),
       defaultBigInt,
       defaultBigInt,
       defaultLogType,
@@ -590,7 +668,7 @@ test('Will handle RevokeDaoRole event', () => {
     )
   );
 
-  assert.notInStore('Bond__DAO__Role', roleId);
+  assert.notInStore('StakingPool__DAO__Role', roleId);
 
   clearStore();
 });
@@ -611,7 +689,7 @@ test('Will handle RevokeGlobalRole event', () => {
 
   handleRevokeGlobalRole(
     new RevokeGlobalRole(
-      Address.fromString(BOND_MEDIATOR_ADDRESS),
+      Address.fromString(STAKINGPOOL_MEDIATOR_ADDRESS),
       defaultBigInt,
       defaultBigInt,
       defaultLogType,
@@ -626,7 +704,7 @@ test('Will handle RevokeGlobalRole event', () => {
     )
   );
 
-  assert.notInStore('Bond__Role', roleId);
+  assert.notInStore('StakingPool__Role', roleId);
 
   clearStore();
 });
@@ -635,16 +713,21 @@ test('Will handle RevokeGlobalRole event', () => {
 test('Will handle Unpaused event', () => {
   const instigator = Address.fromString('0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266');
 
-  const bondMediator = createBondMediator();
-  bondMediator.paused = true;
+  const stakingPoolMediator = createStakingPoolMediator();
+  stakingPoolMediator.paused = true;
 
-  bondMediator.save();
+  stakingPoolMediator.save();
 
-  assert.fieldEquals('BondMediator', BOND_MEDIATOR_ADDRESS, 'paused', 'true');
+  assert.fieldEquals(
+    'StakingPoolMediator',
+    STAKINGPOOL_MEDIATOR_ADDRESS,
+    'paused',
+    'true'
+  );
 
   handleUnpaused(
     new Unpaused(
-      Address.fromString(BOND_MEDIATOR_ADDRESS),
+      Address.fromString(STAKINGPOOL_MEDIATOR_ADDRESS),
       defaultBigInt,
       defaultBigInt,
       defaultLogType,
@@ -655,7 +738,12 @@ test('Will handle Unpaused event', () => {
     )
   );
 
-  assert.fieldEquals('BondMediator', BOND_MEDIATOR_ADDRESS, 'paused', 'false');
+  assert.fieldEquals(
+    'StakingPoolMediator',
+    STAKINGPOOL_MEDIATOR_ADDRESS,
+    'paused',
+    'false'
+  );
 
   clearStore();
 });
@@ -665,11 +753,11 @@ test('Will handle Upgraded event', () => {
   const instigator = Address.fromString('0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266');
   const implementation = Address.fromString('0x70997970c51812dc3a010c7d01b50e0d17dc79c8');
 
-  createBondMediator();
+  createStakingPoolMediator();
 
   handleUpgraded(
     new Upgraded(
-      Address.fromString(BOND_MEDIATOR_ADDRESS),
+      Address.fromString(STAKINGPOOL_MEDIATOR_ADDRESS),
       defaultBigInt,
       defaultBigInt,
       defaultLogType,
@@ -686,8 +774,8 @@ test('Will handle Upgraded event', () => {
   );
 
   assert.fieldEquals(
-    'BondMediator',
-    BOND_MEDIATOR_ADDRESS,
+    'StakingPoolMediator',
+    STAKINGPOOL_MEDIATOR_ADDRESS,
     'implementation',
     implementation.toHex()
   );

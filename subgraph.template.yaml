@@ -15,14 +15,14 @@ dataSources:
       language: wasm/assemblyscript
       entities:
         - Bond
+        - Bond__DAO
+        - Bond__DAO__CollateralWhitelist
+        - Bond__DAO__Metadata
+        - Bond__DAO__Role
+        - Bond__Role
         - BondFactory
         - BondMediator
         - BondMediator__Sweep
-        - DAO
-        - DAO__CollateralWhitelist
-        - DAO__Metadata
-        - DAO__Role
-        - Role
       abis:
         - name: BondMediator
           file: ./abis/BondMediator.json
@@ -45,6 +45,8 @@ dataSources:
           handler: handleDaoMetaDataUpdate
         - event: DaoTreasuryUpdate(indexed uint256,indexed address,indexed address)
           handler: handleDaoTreasuryUpdate
+        - event: ERC20Sweep(indexed address,indexed address,uint256,indexed address)
+          handler: handleERC20Sweep
         - event: GrantDaoRole(indexed uint256,indexed bytes32,address,indexed address)
           handler: handleGrantDaoRole
         - event: GrantGlobalRole(bytes32,address,indexed address)
@@ -74,11 +76,12 @@ dataSources:
       apiVersion: 0.0.5
       language: wasm/assemblyscript
       entities:
-        - BondFactory
         - Bond
         - Bond__Metadata
         - Bond__Configuration
         - Bond__RewardPool
+        - BondFactory
+        - BondFactory__Sweep
       abis:
         - name: BondFactory
           file: ./abis/BondFactory.json
@@ -87,6 +90,8 @@ dataSources:
           handler: handleBeneficiaryUpdate
         - event: CreateBond(indexed address,(string,string,string),(uint256,address,uint256,uint256),(address,uint128,uint128)[],indexed address,indexed address)
           handler: handleCreateBond
+        - event: ERC20Sweep(indexed address,indexed address,uint256,indexed address)
+          handler: handleERC20Sweep
         - event: OwnershipTransferred(indexed address,indexed address)
           handler: handleOwnershipTransferred
         - event: Paused(address)
@@ -94,6 +99,68 @@ dataSources:
         - event: Unpaused(address)
           handler: handleUnpaused
       file: ./src/bondFactory.ts
+  - kind: ethereum/contract
+    name: StakingPoolMediator
+    network: {{ network }}
+    source:
+      address: "{{ contracts.stakingPoolMediator.address }}"
+      abi: StakingPoolMediator
+      startBlock: {{ contracts.stakingPoolMediator.startBlock }}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.5
+      language: wasm/assemblyscript
+      entities:
+        - StakingPool
+        - StakingPool__DAO
+        - StakingPool__DAO__CollateralWhitelist
+        - StakingPool__DAO__Metadata
+        - StakingPool__DAO__Role
+        - StakingPool__Role
+        - StakingPoolFactory
+        - StakingPoolMediator
+        - StakingPoolMediator__Sweep
+      abis:
+        - name: StakingPoolMediator
+          file: ./abis/StakingPoolMediator.json
+      eventHandlers:
+        - event: AddCollateralWhitelist(indexed uint256,indexed address,indexed address)
+          handler: handleAddCollateralWhitelist
+        - event: AddStakingPool(indexed uint256,indexed address,indexed address)
+          handler: handleAddStakingPool
+        - event: AdminChanged(address,address)
+          handler: handleAdminChanged
+        - event: BeaconUpgraded(indexed address)
+          handler: handleBeaconUpgraded
+        - event: BeneficiaryUpdate(indexed address,indexed address)
+          handler: handleBeneficiaryUpdate
+        - event: CreateDao(indexed uint256,indexed address,indexed address)
+          handler: handleCreateDao
+        - event: DaoMetaDataUpdate(indexed uint256,string,indexed address)
+          handler: handleDaoMetaDataUpdate
+        - event: DaoTreasuryUpdate(indexed uint256,indexed address,indexed address)
+          handler: handleDaoTreasuryUpdate
+        - event: ERC20Sweep(indexed address,indexed address,uint256,indexed address)
+          handler: handleERC20Sweep
+        - event: GrantDaoRole(indexed uint256,indexed bytes32,address,indexed address)
+          handler: handleGrantDaoRole
+        - event: GrantGlobalRole(bytes32,address,indexed address)
+          handler: handleGrantGlobalRole
+        - event: Paused(address)
+          handler: handlePaused
+        - event: RemoveCollateralWhitelist(indexed uint256,indexed address,indexed address)
+          handler: handleRemoveCollateralWhitelist
+        - event: RevokeDaoRole(indexed uint256,indexed bytes32,address,indexed address)
+          handler: handleRevokeDaoRole
+        - event: RevokeGlobalRole(indexed bytes32,address,indexed address)
+          handler: handleRevokeGlobalRole
+        - event: StakingPoolCreatorUpdate(indexed address,indexed address,indexed address)
+          handler: handleStakingPoolCreatorUpdate
+        - event: Unpaused(address)
+          handler: handleUnpaused
+        - event: Upgraded(indexed address)
+          handler: handleUpgraded
+      file: ./src/stakingPoolMediator.ts
   - kind: ethereum/contract
     name: StakingPoolFactory
     network: {{ network }}
@@ -107,25 +174,21 @@ dataSources:
       language: wasm/assemblyscript
       entities:
         - StakingPool
-        - StakingPool__Deposit
-        - StakingPool__Reward
-        - StakingPool__RewardWithdrawal
-        - StakingPool__Withdrawal
         - StakingPoolFactory
+        - StakingPoolFactory__Sweep
+        - StakingPool__Reward
       abis:
         - name: StakingPoolFactory
           file: ./abis/StakingPoolFactory.json
       eventHandlers:
-        - event: GrantDaoRole(indexed uint256,indexed bytes32,address,indexed address)
-          handler: handleGrantDaoRole
-        - event: GrantGlobalRole(bytes32,address,indexed address)
-          handler: handleGrantGlobalRole
+        - event: BeneficiaryUpdate(indexed address,indexed address)
+          handler: handleBeneficiaryUpdate
+        - event: ERC20Sweep(indexed address,indexed address,uint256,indexed address)
+          handler: handleERC20Sweep
+        - event: OwnershipTransferred(indexed address,indexed address)
+          handler: handleOwnershipTransferred
         - event: Paused(address)
           handler: handlePaused
-        - event: RevokeDaoRole(indexed uint256,indexed bytes32,address,indexed address)
-          handler: handleRevokeDaoRole
-        - event: RevokeGlobalRole(indexed bytes32,address,indexed address)
-          handler: handleRevokeGlobalRole
         - event: StakingPoolCreated(indexed address,address,indexed address,(address,uint256,uint256)[],address,uint128,uint128,uint128,uint8)
           handler: handleStakingPoolCreated
         - event: Unpaused(address)
@@ -143,11 +206,12 @@ templates:
       language: wasm/assemblyscript
       file: ./src/bondFactory.ts
       entities:
-        - BondFactory
         - Bond
         - Bond__Metadata
         - Bond__Configuration
         - Bond__RewardPool
+        - BondFactory
+        - BondFactory__Sweep
       abis:
         - name: BondFactory
           file: ./abis/BondFactory.json
@@ -156,6 +220,8 @@ templates:
           handler: handleBeneficiaryUpdate
         - event: CreateBond(indexed address,(string,string,string),(uint256,address,uint256,uint256),(address,uint128,uint128)[],indexed address,indexed address)
           handler: handleCreateBond
+        - event: ERC20Sweep(indexed address,indexed address,uint256,indexed address)
+          handler: handleERC20Sweep
         - event: OwnershipTransferred(indexed address,indexed address)
           handler: handleOwnershipTransferred
         - event: Paused(address)
@@ -229,6 +295,37 @@ templates:
         - event: WithdrawCollateral(indexed address,indexed address,uint256,indexed address)
           handler: handleWithdrawCollateral
   - kind: ethereum/contract
+    name: StakingPoolFactory
+    network: {{ network }}
+    source:
+      abi: StakingPoolFactory
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.5
+      language: wasm/assemblyscript
+      entities:
+        - StakingPool
+        - StakingPool__Reward
+        - StakingPoolFactory
+        - StakingPoolFactory__Sweep
+      abis:
+        - name: StakingPoolFactory
+          file: ./abis/StakingPoolFactory.json
+      eventHandlers:
+        - event: BeneficiaryUpdate(indexed address,indexed address)
+          handler: handleBeneficiaryUpdate
+        - event: ERC20Sweep(indexed address,indexed address,uint256,indexed address)
+          handler: handleERC20Sweep
+        - event: OwnershipTransferred(indexed address,indexed address)
+          handler: handleOwnershipTransferred
+        - event: Paused(address)
+          handler: handlePaused
+        - event: StakingPoolCreated(indexed address,address,indexed address,(address,uint256,uint256)[],address,uint128,uint128,uint128,uint8)
+          handler: handleStakingPoolCreated
+        - event: Unpaused(address)
+          handler: handleUnpaused
+      file: ./src/stakingPoolFactory.ts
+  - kind: ethereum/contract
     name: StakingPool
     network: {{ network }}
     source:
@@ -243,27 +340,26 @@ templates:
         - StakingPool__Deposit
         - StakingPool__Reward
         - StakingPool__RewardWithdrawal
+        - StakingPool__Sweep
         - StakingPool__Withdrawal
       abis:
         - name: StakingPool
           file: ./abis/StakingPool.json
       eventHandlers:
+        - event: BeneficiaryUpdate(indexed address,indexed address)
+          handler: handleBeneficiaryUpdate
         - event: Deposit(indexed address,uint256)
           handler: handleDeposit
+        - event: ERC20Sweep(indexed address,indexed address,uint256,indexed address)
+          handler: handleERC20Sweep
         - event: EmergencyMode(indexed address)
           handler: handleEmergencyMode
-        - event: GrantDaoRole(indexed uint256,indexed bytes32,address,indexed address)
-          handler: handleGrantDaoRole
-        - event: GrantGlobalRole(bytes32,address,indexed address)
-          handler: handleGrantGlobalRole
         - event: InitializeRewards(address,uint256)
           handler: handleInitializeRewards
+        - event: OwnershipTransferred(indexed address,indexed address)
+          handler: handleOwnershipTransferred
         - event: Paused(address)
           handler: handlePaused
-        - event: RevokeDaoRole(indexed uint256,indexed bytes32,address,indexed address)
-          handler: handleRevokeDaoRole
-        - event: RevokeGlobalRole(indexed bytes32,address,indexed address)
-          handler: handleRevokeGlobalRole
         - event: RewardsAvailableTimestamp(uint32)
           handler: handleRewardsAvailableTimestamp
         - event: Unpaused(address)
