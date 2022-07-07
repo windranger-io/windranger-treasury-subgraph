@@ -9,17 +9,17 @@ import {
 
 import {
   BeneficiaryUpdate,
-  CreateBond,
+  CreatePerformanceBond,
   ERC20Sweep,
   OwnershipTransferred,
   Paused,
   Unpaused
-} from '../generated/BondFactory/BondFactory';
+} from '../generated/PerformanceBondFactory/PerformanceBondFactory';
 
-import { SingleCollateralMultiRewardBond as SingleCollateralMultiRewardBondTemplate } from '../generated/templates';
+import { SingleCollateralMultiRewardPerformanceBond as SingleCollateralMultiRewardPerformanceBondTemplate } from '../generated/templates';
 
-// - CreateBond(indexed address,(string,string,string),(uint256,address,uint256,uint256),(address,uint128,uint128)[],indexed address,indexed address)
-export function handleCreateBond(event: CreateBond): void {
+// - CreatePerformanceBond(indexed address,(string,string,string),(uint256,address,uint256,uint256),(address,uint128,uint128)[],indexed address,indexed address)
+export function handleCreatePerformanceBond(event: CreatePerformanceBond): void {
   let bondFactory = BondFactory.load(event.address.toHex());
   bondFactory =
     bondFactory === null ? new BondFactory(event.address.toHex()) : bondFactory;
@@ -33,7 +33,7 @@ export function handleCreateBond(event: CreateBond): void {
   bondFactory.save();
 
   // Create an instance of SingleCollateralMultiRewardBond to capture events emitted from the new contract
-  SingleCollateralMultiRewardBondTemplate.create(event.params.bond);
+  SingleCollateralMultiRewardPerformanceBondTemplate.create(event.params.bond);
 
   let bond = Bond.load(event.params.bond.toHex());
   bond = bond === null ? new Bond(event.params.bond.toHex()) : bond;

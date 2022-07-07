@@ -23,6 +23,38 @@ export const STAKINGPOOL_FACTORY_ADDRESS = '0x14dc79964da2c08b23698b3d3cc7ca3219
 export const STAKINGPOOL_ADDRESS = '0x15d34aaf54267db7d7c367839aaf71a00a2c6a65';
 export const STAKINGPOOL_REWARD_ADDRESS = `${STAKINGPOOL_ADDRESS}-${TOKEN_ADDESS}`;
 
+export const INSTIGATOR = Address.fromString('0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266');
+export const BENEFICIARY = Address.fromString('0x70997970c51812dc3a010c7d01b50e0d17dc79c8');
+export const TOKEN = Address.fromString('0x8626f6940e2eb28930efb4cef49b2d1f2c9c1199');
+
+export const createPerformanceBondMediator = (): BondMediator => {
+  const bondMediator = new BondMediator(BOND_MEDIATOR_ADDRESS);
+  bondMediator.save();
+
+  return bondMediator;
+};
+
+export const createPerformanceBondDAO = (): DAO => {
+  const dao = new DAO(DAO_ID_HEX);
+  dao.save();
+
+  return dao;
+};
+
+export const createPerformanceBondFactory = (): BondFactory => {
+  const bondFactory = new BondFactory(BOND_FACTORY_ADDRESS);
+  bondFactory.save();
+
+  return bondFactory;
+};
+
+export const createPerformanceBond = (): Bond => {
+  const bond = new Bond(BOND_ADDRESS);
+  bond.save();
+
+  return bond;
+};
+
 export const createStakingPoolMediator = (): StakingPoolMediator => {
   const stakingPoolMediator = new StakingPoolMediator(STAKINGPOOL_MEDIATOR_ADDRESS);
   stakingPoolMediator.save();
@@ -35,34 +67,6 @@ export const createStakingPoolDAO = (): StakingPoolDAO => {
   stakingPoolDAO.save();
 
   return stakingPoolDAO;
-};
-
-export const createBondMediator = (): BondMediator => {
-  const bondMediator = new BondMediator(BOND_MEDIATOR_ADDRESS);
-  bondMediator.save();
-
-  return bondMediator;
-};
-
-export const createBondFactory = (): BondFactory => {
-  const bondFactory = new BondFactory(BOND_FACTORY_ADDRESS);
-  bondFactory.save();
-
-  return bondFactory;
-};
-
-export const createDAO = (): DAO => {
-  const dao = new DAO(DAO_ID_HEX);
-  dao.save();
-
-  return dao;
-};
-
-export const createBond = (): Bond => {
-  const bond = new Bond(BOND_ADDRESS);
-  bond.save();
-
-  return bond;
 };
 
 export const createStakingPoolFactory = (): StakingPoolFactory => {

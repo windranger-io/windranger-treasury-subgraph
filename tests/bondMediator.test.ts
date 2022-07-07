@@ -4,10 +4,10 @@ import { assert, clearStore, test } from 'matchstick-as/assembly/index';
 import {
   BOND_ADDRESS,
   BOND_MEDIATOR_ADDRESS,
-  createBond,
-  createBondFactory,
-  createBondMediator,
-  createDAO,
+  createPerformanceBond,
+  createPerformanceBondFactory,
+  createPerformanceBondMediator,
+  createPerformanceBondDAO,
   DAO_ID,
   DAO_ID_HEX,
   defaultAddress,
@@ -24,12 +24,12 @@ import {
 } from '../generated/schema';
 
 import {
-  AddBond,
+  AddPerformanceBond,
   AddCollateralWhitelist,
   AdminChanged,
   BeaconUpgraded,
   BeneficiaryUpdate,
-  BondCreatorUpdate,
+  PerformanceBondCreatorUpdate,
   CreateDao,
   DaoMetaDataUpdate,
   DaoTreasuryUpdate,
@@ -42,15 +42,15 @@ import {
   RevokeGlobalRole,
   Unpaused,
   Upgraded
-} from '../generated/BondMediator/BondMediator';
+} from '../generated/PerformanceBondMediator/PerformanceBondMediator';
 
 import {
-  handleAddBond,
+  handleAddPerformanceBond,
   handleAddCollateralWhitelist,
   handleAdminChanged,
   handleBeaconUpgraded,
   handleBeneficiaryUpdate,
-  handleBondCreatorUpdate,
+  handlePerformanceBondCreatorUpdate,
   handleCreateDao,
   handleDaoMetaDataUpdate,
   handleDaoTreasuryUpdate,
@@ -65,17 +65,17 @@ import {
   handleUpgraded
 } from '../src/bondMediator';
 
-// - AddBond(indexed uint256,indexed address,indexed address)
-test('Will handle AddBond event', () => {
+// - AddPerformanceBond(indexed uint256,indexed address,indexed address)
+test('Will handle AddPerformanceBond event', () => {
   const bondAddress = Address.fromString(BOND_ADDRESS);
   const instigator = Address.fromString('0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266');
 
-  createBondMediator();
-  createDAO();
-  createBond();
+  createPerformanceBondMediator();
+  createPerformanceBondDAO();
+  createPerformanceBond();
 
-  handleAddBond(
-    new AddBond(
+  handleAddPerformanceBond(
+    new AddPerformanceBond(
       Address.fromString(BOND_MEDIATOR_ADDRESS),
       defaultBigInt,
       defaultBigInt,
@@ -107,7 +107,7 @@ test('Will handle AddCollateralWhitelist event', () => {
     '0x7B4f352Cd40114f12e82fC675b5BA8C7582FC513'
   );
 
-  createDAO();
+  createPerformanceBondDAO();
 
   handleAddCollateralWhitelist(
     new AddCollateralWhitelist(
@@ -150,7 +150,7 @@ test('Will handle AdminChanged event', () => {
   const newAdmin = Address.fromString('0x70997970c51812dc3a010c7d01b50e0d17dc79c8');
   const previousAdmin = Address.fromString('0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266');
 
-  createBondMediator();
+  createPerformanceBondMediator();
 
   handleAdminChanged(
     new AdminChanged(
@@ -181,7 +181,7 @@ test('Will handle BeaconUpgraded event', () => {
   const instigator = Address.fromString('0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266');
   const beacon = Address.fromString('0x70997970c51812dc3a010c7d01b50e0d17dc79c8');
 
-  createBondMediator();
+  createPerformanceBondMediator();
 
   handleBeaconUpgraded(
     new BeaconUpgraded(
@@ -206,7 +206,7 @@ test('Will handle BeneficiaryUpdate event', () => {
   const instigator = Address.fromString('0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266');
   const beneficiary = Address.fromString('0x70997970c51812dc3a010c7d01b50e0d17dc79c8');
 
-  createBondMediator();
+  createPerformanceBondMediator();
 
   handleBeneficiaryUpdate(
     new BeneficiaryUpdate(
@@ -234,19 +234,19 @@ test('Will handle BeneficiaryUpdate event', () => {
   clearStore();
 });
 
-// - BondCreatorUpdate(indexed address,indexed address,indexed address)
-test('Will handle BondCreatorUpdate event', () => {
+// - PerformanceBondCreatorUpdate(indexed address,indexed address,indexed address)
+test('Will handle PerformanceBondCreatorUpdate event', () => {
   const instigator = Address.fromString('0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266');
   const prevFactory = Address.fromString('0x70997970c51812dc3a010c7d01b50e0d17dc79c8');
   const factory = Address.fromString('0x70997970c51812dc3a010c7d01b50e0d17dc79c8');
 
-  createBondFactory();
-  createBondMediator();
+  createPerformanceBondFactory();
+  createPerformanceBondMediator();
 
   assert.fieldEquals('BondMediator', BOND_MEDIATOR_ADDRESS, 'factory', '');
 
-  handleBondCreatorUpdate(
-    new BondCreatorUpdate(
+  handlePerformanceBondCreatorUpdate(
+    new PerformanceBondCreatorUpdate(
       Address.fromString(BOND_MEDIATOR_ADDRESS),
       defaultBigInt,
       defaultBigInt,
@@ -281,7 +281,7 @@ test('Will handle CreateDao event', () => {
   const instigator = Address.fromString('0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266');
   const treasury = Address.fromString('0x70997970c51812dc3a010c7d01b50e0d17dc79c8');
 
-  createBondMediator();
+  createPerformanceBondMediator();
 
   handleCreateDao(
     new CreateDao(
@@ -311,8 +311,8 @@ test('Will handle DaoMetaDataUpdate event', () => {
   const instigator = Address.fromString('0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266');
   const data = 'sample data;';
 
-  createDAO();
-  createBondMediator();
+  createPerformanceBondDAO();
+  createPerformanceBondMediator();
 
   handleDaoMetaDataUpdate(
     new DaoMetaDataUpdate(
@@ -342,8 +342,8 @@ test('Will handle DaoTreasuryUpdate event', () => {
   const instigator = Address.fromString('0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266');
   const treasury = Address.fromString('0x70997970c51812dc3a010c7d01b50e0d17dc79c8');
 
-  createDAO();
-  createBondMediator();
+  createPerformanceBondDAO();
+  createPerformanceBondMediator();
 
   handleDaoTreasuryUpdate(
     new DaoTreasuryUpdate(
@@ -376,7 +376,7 @@ test('Will handle ERC20Sweep event', () => {
 
   const sweepId = `${defaultAddress.toHex()}-${defaultBigInt.toHex()}`;
 
-  createBondMediator();
+  createPerformanceBondMediator();
 
   handleERC20Sweep(
     new ERC20Sweep(
@@ -416,8 +416,8 @@ test('Will handle GrantDaoRole event', () => {
   const account = Address.fromString('0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266');
   const role = Bytes.fromI32(1);
 
-  createDAO();
-  createBondMediator();
+  createPerformanceBondDAO();
+  createPerformanceBondMediator();
 
   handleGrantDaoRole(
     new GrantDaoRole(
@@ -453,8 +453,8 @@ test('Will handle GrantGlobalRole event', () => {
   const account = Address.fromString('0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266');
   const role = Bytes.fromI32(1);
 
-  createDAO();
-  createBondMediator();
+  createPerformanceBondDAO();
+  createPerformanceBondMediator();
 
   handleGrantGlobalRole(
     new GrantGlobalRole(
@@ -487,7 +487,7 @@ test('Will handle GrantGlobalRole event', () => {
 test('Will handle Paused event', () => {
   const instigator = Address.fromString('0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266');
 
-  createBondMediator();
+  createPerformanceBondMediator();
 
   assert.fieldEquals('BondMediator', BOND_MEDIATOR_ADDRESS, 'paused', 'false');
 
@@ -516,7 +516,7 @@ test('Will handle RemoveCollateralWhitelist event', () => {
     '0x7B4f352Cd40114f12e82fC675b5BA8C7582FC513'
   );
 
-  const dao = createDAO();
+  const dao = createPerformanceBondDAO();
 
   const whitelistId = `${DAO_ID_HEX}-${treasuryAddress.toHex()}`;
   const whitelist = new DAOCollateralWhitelist(whitelistId);
@@ -559,7 +559,7 @@ test('Will handle RevokeDaoRole event', () => {
   const account = Address.fromString('0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266');
   const role = Bytes.fromI32(1);
 
-  const dao = createDAO();
+  const dao = createPerformanceBondDAO();
 
   const roleId = `${DAO_ID_HEX}-${role.toHex()}-${account.toHex()}`;
   const daoRole = new DAORole(roleId);
@@ -635,7 +635,7 @@ test('Will handle RevokeGlobalRole event', () => {
 test('Will handle Unpaused event', () => {
   const instigator = Address.fromString('0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266');
 
-  const bondMediator = createBondMediator();
+  const bondMediator = createPerformanceBondMediator();
   bondMediator.paused = true;
 
   bondMediator.save();
@@ -665,7 +665,7 @@ test('Will handle Upgraded event', () => {
   const instigator = Address.fromString('0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266');
   const implementation = Address.fromString('0x70997970c51812dc3a010c7d01b50e0d17dc79c8');
 
-  createBondMediator();
+  createPerformanceBondMediator();
 
   handleUpgraded(
     new Upgraded(

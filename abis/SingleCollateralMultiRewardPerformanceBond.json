@@ -628,7 +628,7 @@
             "type": "uint128"
           }
         ],
-        "internalType": "struct Bond.TimeLockRewardPool[]",
+        "internalType": "struct PerformanceBond.TimeLockRewardPool[]",
         "name": "",
         "type": "tuple[]"
       }
@@ -714,7 +714,7 @@
             "type": "uint256"
           }
         ],
-        "internalType": "struct TimeLockMultiRewardBond.ClaimableReward[]",
+        "internalType": "struct TimeLockMultiRewardPerformanceBond.ClaimableReward[]",
         "name": "",
         "type": "tuple[]"
       }
@@ -919,7 +919,7 @@
             "type": "uint256"
           }
         ],
-        "internalType": "struct ERC20SingleCollateralBond.Slash",
+        "internalType": "struct ERC20SingleCollateralPerformanceBond.Slash",
         "name": "",
         "type": "tuple"
       }
@@ -944,7 +944,7 @@
             "type": "uint256"
           }
         ],
-        "internalType": "struct ERC20SingleCollateralBond.Slash[]",
+        "internalType": "struct ERC20SingleCollateralPerformanceBond.Slash[]",
         "name": "",
         "type": "tuple[]"
       }
@@ -1022,7 +1022,7 @@
             "type": "string"
           }
         ],
-        "internalType": "struct Bond.MetaData",
+        "internalType": "struct PerformanceBond.MetaData",
         "name": "metadata",
         "type": "tuple"
       },
@@ -1049,7 +1049,7 @@
             "type": "uint256"
           }
         ],
-        "internalType": "struct Bond.Settings",
+        "internalType": "struct PerformanceBond.Settings",
         "name": "configuration",
         "type": "tuple"
       },
@@ -1071,7 +1071,7 @@
             "type": "uint128"
           }
         ],
-        "internalType": "struct Bond.TimeLockRewardPool[]",
+        "internalType": "struct PerformanceBond.TimeLockRewardPool[]",
         "name": "rewards",
         "type": "tuple[]"
       },
@@ -1338,7 +1338,7 @@
             "type": "uint128"
           }
         ],
-        "internalType": "struct Bond.TimeLockRewardPool[]",
+        "internalType": "struct PerformanceBond.TimeLockRewardPool[]",
         "name": "",
         "type": "tuple[]"
       }

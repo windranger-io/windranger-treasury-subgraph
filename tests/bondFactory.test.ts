@@ -3,7 +3,7 @@ import { assert, clearStore, test } from 'matchstick-as/assembly/index';
 
 import {
   BOND_FACTORY_ADDRESS,
-  createBondFactory,
+  createPerformanceBondFactory,
   defaultAddress,
   defaultBigInt,
   defaultLogType,
@@ -13,24 +13,24 @@ import {
 
 import {
   BeneficiaryUpdate,
-  CreateBond,
+  CreatePerformanceBond,
   ERC20Sweep,
   OwnershipTransferred,
   Paused,
   Unpaused
-} from '../generated/BondFactory/BondFactory';
+} from '../generated/PerformanceBondFactory/PerformanceBondFactory';
 
 import {
   handleBeneficiaryUpdate,
-  handleCreateBond,
+  handleCreatePerformanceBond,
   handleERC20Sweep,
   handleOwnershipTransferred,
   handlePaused,
   handleUnpaused
 } from '../src/bondFactory';
 
-// - CreateBond(indexed address,(string,string,string),(uint256,address,uint256,uint256),(address,uint128,uint128)[],indexed address,indexed address)
-test('Will handle CreateBond event', () => {
+// - CreatePerformanceBond(indexed address,(string,string,string),(uint256,address,uint256,uint256),(address,uint128,uint128)[],indexed address,indexed address)
+test('Will handle CreatePerformanceBond event', () => {
   const bondAddress = Address.fromString('0xcafCfdF4517F504a473469F3723e674413EE9bce');
   const treasuryAddress = Address.fromString(
     '0x7B4f352Cd40114f12e82fC675b5BA8C7582FC513'
@@ -39,7 +39,7 @@ test('Will handle CreateBond event', () => {
     '0x51C65cd0Cdb1A8A8b79dfc2eE965B1bA0bb8fc89'
   );
 
-  createBondFactory();
+  createPerformanceBondFactory();
 
   const metadata = changetype<ethereum.Tuple>([
     ethereum.Value.fromString('A highly unique bond name'),
@@ -54,8 +54,8 @@ test('Will handle CreateBond event', () => {
     ethereum.Value.fromI32(1)
   ]);
 
-  handleCreateBond(
-    new CreateBond(
+  handleCreatePerformanceBond(
+    new CreatePerformanceBond(
       Address.fromString(BOND_FACTORY_ADDRESS),
       defaultBigInt,
       defaultBigInt,
@@ -152,7 +152,7 @@ test('Will handle BeneficiaryUpdate event', () => {
     '0x70997970c51812dc3a010c7d01b50e0d17dc79c8'
   );
 
-  createBondFactory();
+  createPerformanceBondFactory();
 
   handleBeneficiaryUpdate(
     new BeneficiaryUpdate(
@@ -195,7 +195,7 @@ test('Will handle ERC20Sweep event', () => {
 
   const sweepId = `${defaultAddress.toHex()}-${defaultBigInt.toHex()}`;
 
-  createBondFactory();
+  createPerformanceBondFactory();
 
   handleERC20Sweep(
     new ERC20Sweep(
@@ -234,7 +234,7 @@ test('Will handle OwnershipTransferred event', () => {
   const newOwner = Address.fromString('0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266');
   const previousOwner = Address.fromString('0x70997970c51812dc3a010c7d01b50e0d17dc79c8');
 
-  createBondFactory();
+  createPerformanceBondFactory();
 
   handleOwnershipTransferred(
     new OwnershipTransferred(
@@ -262,7 +262,7 @@ test('Will handle OwnershipTransferred event', () => {
 
 // - Paused(address)
 test('Will handle Paused event', () => {
-  createBondFactory();
+  createPerformanceBondFactory();
 
   assert.fieldEquals('BondFactory', BOND_FACTORY_ADDRESS, 'paused', 'false');
 
@@ -291,7 +291,7 @@ test('Will handle Paused event', () => {
 
 // - Unpaused(address)
 test('Will handle Unpaused event', () => {
-  const bondFactory = createBondFactory();
+  const bondFactory = createPerformanceBondFactory();
   bondFactory.paused = true;
   bondFactory.save();
 

@@ -13,12 +13,12 @@ import {
 } from '../generated/schema';
 
 import {
-  AddBond,
+  AddPerformanceBond,
   AddCollateralWhitelist,
   AdminChanged,
   BeaconUpgraded,
   BeneficiaryUpdate,
-  BondCreatorUpdate,
+  PerformanceBondCreatorUpdate,
   CreateDao,
   DaoMetaDataUpdate,
   DaoTreasuryUpdate,
@@ -31,12 +31,12 @@ import {
   RevokeGlobalRole,
   Unpaused,
   Upgraded
-} from '../generated/BondMediator/BondMediator';
+} from '../generated/PerformanceBondMediator/PerformanceBondMediator';
 
-import { BondFactory as BondFactoryTemplate } from '../generated/templates';
+import { PerformanceBondFactory as PerformanceBondFactoryTemplate } from '../generated/templates';
 
-// - AddBond(indexed uint256,indexed address,indexed address)
-export function handleAddBond(event: AddBond): void {
+// - AddPerformanceBond(indexed uint256,indexed address,indexed address)
+export function handleAddPerformanceBond(event: AddPerformanceBond): void {
   let dao = DAO.load(event.params.daoId.toString());
   dao = dao === null ? new DAO(event.params.daoId.toHex()) : dao;
 
@@ -130,8 +130,8 @@ export function handleBeneficiaryUpdate(event: BeneficiaryUpdate): void {
   bondMediator.save();
 }
 
-// - BondCreatorUpdate(indexed address,indexed address,indexed address)
-export function handleBondCreatorUpdate(event: BondCreatorUpdate): void {
+// - PerformanceBondCreatorUpdate(indexed address,indexed address,indexed address)
+export function handlePerformanceBondCreatorUpdate(event: PerformanceBondCreatorUpdate): void {
   let bondMediator = BondMediator.load(event.address.toHex());
   bondMediator =
     bondMediator === null ? new BondMediator(event.address.toHex()) : bondMediator;
@@ -158,7 +158,7 @@ export function handleBondCreatorUpdate(event: BondCreatorUpdate): void {
   bondFactory.save();
 
   // Bind to new template to capture events on the new BondFactory
-  BondFactoryTemplate.create(event.params.updateCreator);
+  PerformanceBondFactoryTemplate.create(event.params.updateCreator);
 }
 
 // - CreateDao(indexed uint256,indexed address,indexed address)
