@@ -2,20 +2,20 @@
   "network": "rinkeby",
   "contracts": {
     "bondMediator": {
-      "address": "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9",
-      "startBlock": 0
+      "address": "0x577621C44F0Cb7237616F25eed54bBADAda28055",
+      "startBlock": 10978753
     },
     "bondFactory": {
-      "address": "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",
-      "startBlock": 0
+      "address": "0x14F33811719Ee4FDdd16e680338b54C2eE50Fd8B",
+      "startBlock": 10978751
     },
     "stakingPoolMediator": {
-      "address": "0xE8D2bEd7fC319be6D75FeDff3Ca56166850E35d5",
-      "startBlock": 0
+      "address": "0x769fCBFcAaEb1420Ea6F66CdC7201be6967E7426",
+      "startBlock": 10978801
     },
     "stakingPoolFactory": {
-      "address": "0x5FC8d32690cc91D4c39d9d3abcBD16989F875707",
-      "startBlock": 0
+      "address": "0x8D86D59b9f0c226B7184eDb15e8A09Ac4A5EbA74",
+      "startBlock": 10978800
     }
   }
 }
