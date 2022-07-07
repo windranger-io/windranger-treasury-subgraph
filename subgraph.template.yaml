@@ -51,6 +51,8 @@ dataSources:
           handler: handleGrantDaoRole
         - event: GrantGlobalRole(bytes32,address,indexed address)
           handler: handleGrantGlobalRole
+        - event: Initialized(uint8)
+          handler: handleInitialized
         - event: Paused(address)
           handler: handlePaused
         - event: RemoveCollateralWhitelist(indexed uint256,indexed address,indexed address)
@@ -146,6 +148,8 @@ dataSources:
           handler: handleGrantDaoRole
         - event: GrantGlobalRole(bytes32,address,indexed address)
           handler: handleGrantGlobalRole
+        - event: Initialized(uint8)
+          handler: handleInitialized
         - event: Paused(address)
           handler: handlePaused
         - event: RemoveCollateralWhitelist(indexed uint256,indexed address,indexed address)

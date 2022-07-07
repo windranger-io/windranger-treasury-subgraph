@@ -13,6 +13,9 @@ import {
 } from '../generated/schema';
 
 import {
+  // bind'able contract instance of the StakingPoolMediator
+  StakingPoolMediator as StakingPoolMediatorContract,
+  // events types
   AddCollateralWhitelist,
   AddStakingPool,
   AdminChanged,
@@ -24,6 +27,7 @@ import {
   ERC20Sweep,
   GrantDaoRole,
   GrantGlobalRole,
+  Initialized,
   Paused,
   RemoveCollateralWhitelist,
   RevokeDaoRole,
@@ -278,6 +282,42 @@ export function handleGrantGlobalRole(event: GrantGlobalRole): void {
   role.lastUpdatedTimestamp = event.block.timestamp;
 
   role.save();
+}
+
+// - Initialized(uint8)
+export function handleInitialized(event: Initialized): void {
+  const mediator = StakingPoolMediatorContract.bind(event.address);
+  const factory = mediator.stakingPoolCreator();
+
+  let stakingPoolMediator = StakingPoolMediator.load(event.address.toHex());
+  stakingPoolMediator =
+    stakingPoolMediator === null
+      ? new StakingPoolMediator(event.address.toHex())
+      : stakingPoolMediator;
+
+  let stakingPoolFactory = StakingPoolFactory.load(factory.toHex());
+  stakingPoolFactory =
+    stakingPoolFactory === null
+      ? new StakingPoolFactory(factory.toHex())
+      : stakingPoolFactory;
+
+  stakingPoolMediator.factory = stakingPoolFactory.id;
+
+  stakingPoolMediator.createdAtTimestamp =
+    stakingPoolMediator.createdAtTimestamp || event.block.timestamp;
+  stakingPoolMediator.lastUpdatedTimestamp = event.block.timestamp;
+
+  stakingPoolMediator.save();
+
+  stakingPoolFactory.mediator = stakingPoolMediator.id;
+  stakingPoolFactory.factory = factory;
+  stakingPoolFactory.createdAtTimestamp = event.block.timestamp;
+  stakingPoolFactory.lastUpdatedTimestamp = event.block.timestamp;
+
+  stakingPoolFactory.save();
+
+  // Bind to new template to capture events on the new StakingPoolFactory
+  StakingPoolFactoryTemplate.create(factory);
 }
 
 // - Paused(address)

@@ -13,6 +13,9 @@ import {
 } from '../generated/schema';
 
 import {
+  // bind'able contract instance of the PerformanceBondMediator
+  PerformanceBondMediator as PerformanceBondMediatorContract,
+  // events types
   AddPerformanceBond,
   AddCollateralWhitelist,
   AdminChanged,
@@ -25,6 +28,7 @@ import {
   ERC20Sweep,
   GrantDaoRole,
   GrantGlobalRole,
+  Initialized,
   Paused,
   RemoveCollateralWhitelist,
   RevokeDaoRole,
@@ -286,6 +290,40 @@ export function handleGrantGlobalRole(event: GrantGlobalRole): void {
   role.lastUpdatedTimestamp = event.block.timestamp;
 
   role.save();
+}
+
+// - Initialized(uint8)
+export function handleInitialized(event: Initialized): void {
+  const mediator = PerformanceBondMediatorContract.bind(event.address);
+  const factory = mediator.bondCreator();
+  
+  let bondMediator = BondMediator.load(event.address.toHex());
+  bondMediator =
+    bondMediator === null ? new BondMediator(event.address.toHex()) : bondMediator;
+
+  let bondFactory = BondFactory.load(factory.toHex());
+  bondFactory =
+    bondFactory === null
+      ? new BondFactory(factory.toHex())
+      : bondFactory;
+  
+  bondMediator.factory = bondFactory.id;
+
+  bondMediator.createdAtTimestamp =
+    bondMediator.createdAtTimestamp || event.block.timestamp;
+  bondMediator.lastUpdatedTimestamp = event.block.timestamp;
+
+  bondMediator.save();
+
+  bondFactory.mediator = bondMediator.id;
+  bondFactory.factory = factory;
+  bondFactory.createdAtTimestamp = event.block.timestamp;
+  bondFactory.lastUpdatedTimestamp = event.block.timestamp;
+
+  bondFactory.save();
+
+  // Bind to new template to capture events on the new BondFactory
+  PerformanceBondFactoryTemplate.create(factory);
 }
 
 // - Paused(address)

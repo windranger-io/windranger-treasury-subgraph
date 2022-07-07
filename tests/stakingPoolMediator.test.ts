@@ -1,5 +1,5 @@
 import { Address, Bytes, ethereum } from '@graphprotocol/graph-ts';
-import { assert, clearStore, test } from 'matchstick-as/assembly/index';
+import { assert, clearStore, createMockedFunction, test } from 'matchstick-as/assembly/index';
 
 import {
   createStakingPool,
@@ -36,6 +36,7 @@ import {
   ERC20Sweep,
   GrantDaoRole,
   GrantGlobalRole,
+  Initialized,
   Paused,
   RemoveCollateralWhitelist,
   RevokeDaoRole,
@@ -57,6 +58,7 @@ import {
   handleERC20Sweep,
   handleGrantDaoRole,
   handleGrantGlobalRole,
+  handleInitialized,
   handlePaused,
   handleRemoveCollateralWhitelist,
   handleRevokeDaoRole,
@@ -542,6 +544,51 @@ test('Will handle GrantGlobalRole event', () => {
 
   assert.fieldEquals('StakingPool__Role', roleId, 'account', account.toHex());
   assert.fieldEquals('StakingPool__Role', roleId, 'role', role.toHex());
+
+  clearStore();
+});
+
+// - Initialized(uint8)
+test('Will handle Initialized event', () => {
+  const instigator = Address.fromString('0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266');
+  const factory = Address.fromString('0x70997970c51812dc3a010c7d01b50e0d17dc79c8');
+
+  const contractAddress = Address.fromString(STAKINGPOOL_MEDIATOR_ADDRESS);
+  createMockedFunction(contractAddress, "stakingPoolCreator", "stakingPoolCreator():(address)")
+    .returns([ethereum.Value.fromAddress(factory)]);
+        
+  createStakingPoolFactory();
+  createStakingPoolMediator();
+
+  assert.fieldEquals('StakingPoolMediator', STAKINGPOOL_MEDIATOR_ADDRESS, 'factory', '');
+
+  handleInitialized(
+    new Initialized(
+      Address.fromString(STAKINGPOOL_MEDIATOR_ADDRESS),
+      defaultBigInt,
+      defaultBigInt,
+      defaultLogType,
+      newBlock(),
+      newTransaction(instigator.toHex()),
+      [
+        new ethereum.EventParam('version', ethereum.Value.fromI32(0)),
+      ],
+      null
+    )
+  );
+
+  assert.fieldEquals(
+    'StakingPoolMediator',
+    STAKINGPOOL_MEDIATOR_ADDRESS,
+    'factory',
+    factory.toHex()
+  );
+  assert.fieldEquals(
+    'StakingPoolMediator',
+    STAKINGPOOL_MEDIATOR_ADDRESS,
+    'factories',
+    `[${factory.toHex()}]`
+  );
 
   clearStore();
 });
