@@ -3,7 +3,7 @@ import { assert, clearStore, test } from 'matchstick-as/assembly/index';
 
 import {
   BOND_ADDRESS,
-  createBond,
+  createPerformanceBond,
   defaultAddress,
   defaultBigInt,
   defaultLogType,
@@ -32,7 +32,7 @@ import {
   Transfer,
   Unpaused,
   WithdrawCollateral
-} from '../generated/templates/SingleCollateralMultiRewardBond/SingleCollateralMultiRewardBond';
+} from '../generated/templates/SingleCollateralMultiRewardPerformanceBond/SingleCollateralMultiRewardPerformanceBond';
 import {
   handleAllowRedemption,
   handleClaimReward,
@@ -61,7 +61,7 @@ test('Will handle AllowRedemption event', () => {
   const instigator = Address.fromString('0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266');
   const authorizer = Address.fromString('0x70997970c51812dc3a010c7d01b50e0d17dc79c8');
 
-  createBond();
+  createPerformanceBond();
 
   assert.fieldEquals('Bond', BOND_ADDRESS, 'isRedeemable', 'false');
 
@@ -99,7 +99,7 @@ test('Will handle ClaimReward event', () => {
 
   const claimId = `${defaultAddress.toHex()}-${defaultBigInt.toHex()}`;
 
-  createBond();
+  createPerformanceBond();
 
   handleClaimReward(
     new ClaimReward(
@@ -137,7 +137,7 @@ test('Will handle Deposit event', () => {
 
   const depositId = `${BOND_ADDRESS}-${depositor.toHex()}-${tokens.toHex()}`;
 
-  createBond();
+  createPerformanceBond();
 
   handleDeposit(
     new Deposit(
@@ -176,7 +176,7 @@ test('Will handle ERC20Sweep event', () => {
 
   const sweepId = `${defaultAddress.toHex()}-${defaultBigInt.toHex()}`;
 
-  const bond = createBond();
+  const bond = createPerformanceBond();
   bond.collateralTokens = tokens;
   bond.collateralAmount = BigInt.fromI32(amount);
 
@@ -219,7 +219,7 @@ test('Will handle Expire event', () => {
   const tokens = Address.fromString('0x8626f6940e2eb28930efb4cef49b2d1f2c9c1199');
   const amount = 100;
 
-  const bond = createBond();
+  const bond = createPerformanceBond();
   bond.collateralAmount = BigInt.fromI32(amount);
 
   bond.save();
@@ -256,7 +256,7 @@ test('Will handle FullCollateral event', () => {
   const tokens = Address.fromString('0x8626f6940e2eb28930efb4cef49b2d1f2c9c1199');
   const amount = 100;
 
-  createBond();
+  createPerformanceBond();
 
   handleFullCollateral(
     new FullCollateral(
@@ -286,7 +286,7 @@ test('Will handle MetaDataUpdate event', () => {
   const instigator = Address.fromString('0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266');
   const data = 'data string;';
 
-  createBond();
+  createPerformanceBond();
 
   handleMetaDataUpdate(
     new MetaDataUpdate(
@@ -316,7 +316,7 @@ test('Will handle OwnershipTransferred event', () => {
   const previousOwner = Address.fromString('0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266');
   const newOwner = Address.fromString('0x8626f6940e2eb28930efb4cef49b2d1f2c9c1199');
 
-  createBond();
+  createPerformanceBond();
 
   handleOwnershipTransferred(
     new OwnershipTransferred(
@@ -349,7 +349,7 @@ test('Will handle PartialCollateral event', () => {
   const amount = 100;
   const debt = 10;
 
-  createBond();
+  createPerformanceBond();
 
   handlePartialCollateral(
     new PartialCollateral(
@@ -380,7 +380,7 @@ test('Will handle PartialCollateral event', () => {
 test('Will handle Paused event', () => {
   const instigator = Address.fromString('0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266');
 
-  createBond();
+  createPerformanceBond();
 
   assert.fieldEquals('Bond', BOND_ADDRESS, 'paused', 'false');
 
@@ -408,7 +408,7 @@ test('Will handle RedeemableUpdate event', () => {
   const isRedeemable = true;
   const reason = 'it is time';
 
-  createBond();
+  createPerformanceBond();
 
   assert.fieldEquals('Bond', BOND_ADDRESS, 'paused', 'false');
 
@@ -446,7 +446,7 @@ test('Will handle Redemption event', () => {
 
   const redemptionId = `${BOND_ADDRESS}-${redeemer.toHex()}-${tokens.toHex()}`;
 
-  const bond = createBond();
+  const bond = createPerformanceBond();
   bond.collateralAmount = BigInt.fromI32(100);
 
   bond.save();
@@ -498,7 +498,7 @@ test('Will handle RedemptionTimestampUpdate event', () => {
   const date = new Date(1215752000);
   const timestamp = i32(Math.floor(i32(date.getTime()) / 1000));
 
-  createBond();
+  createPerformanceBond();
 
   handleRedemptionTimestampUpdate(
     new RedemptionTimestampUpdate(
@@ -533,7 +533,7 @@ test('Will handle RegisterReward event', () => {
 
   const rewardPoolId = `${BOND_ADDRESS}-${tokens.toHex()}`;
 
-  createBond();
+  createPerformanceBond();
 
   handleRegisterReward(
     new RegisterReward(
@@ -571,7 +571,7 @@ test('Will handle RewardDebt event', () => {
 
   const rewardDebtId = `${defaultAddress.toHex()}-${defaultBigInt.toHex()}`;
 
-  createBond();
+  createPerformanceBond();
 
   handleRewardDebt(
     new RewardDebt(
@@ -645,7 +645,7 @@ test('Will handle SlashDeposits event', () => {
 
   const slashId = `${defaultAddress.toHex()}-${defaultBigInt.toHex()}`;
 
-  const bond = createBond();
+  const bond = createPerformanceBond();
   bond.collateralAmount = BigInt.fromI32(amount);
 
   bond.save();
@@ -695,7 +695,7 @@ test('Will handle Transfer event', () => {
 
   const transferId = `${defaultAddress.toHex()}-${defaultBigInt.toHex()}`;
 
-  const bond = createBond();
+  const bond = createPerformanceBond();
   bond.collateralAmount = BigInt.fromI32(100);
 
   bond.save();
@@ -731,7 +731,7 @@ test('Will handle Transfer event', () => {
 test('Will handle Unpaused event', () => {
   const instigator = Address.fromString('0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266');
 
-  const bond = createBond();
+  const bond = createPerformanceBond();
   bond.paused = true;
 
   bond.save();
@@ -786,7 +786,7 @@ test('Will handle WithdrawCollateral event', () => {
   const treasury = Address.fromString('0x70997970c51812dc3a010c7d01b50e0d17dc79c8');
   const tokens = Address.fromString('0x8626f6940e2eb28930efb4cef49b2d1f2c9c1199');
 
-  const bond = createBond();
+  const bond = createPerformanceBond();
   bond.collateralAmount = BigInt.fromI32(1000);
 
   bond.save();

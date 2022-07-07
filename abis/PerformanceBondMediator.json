@@ -11,7 +11,7 @@
       {
         "indexed": true,
         "internalType": "address",
-        "name": "bond",
+        "name": "collateralTokens",
         "type": "address"
       },
       {
@@ -21,7 +21,7 @@
         "type": "address"
       }
     ],
-    "name": "AddBond",
+    "name": "AddCollateralWhitelist",
     "type": "event"
   },
   {
@@ -36,7 +36,7 @@
       {
         "indexed": true,
         "internalType": "address",
-        "name": "collateralTokens",
+        "name": "bond",
         "type": "address"
       },
       {
@@ -46,7 +46,7 @@
         "type": "address"
       }
     ],
-    "name": "AddCollateralWhitelist",
+    "name": "AddPerformanceBond",
     "type": "event"
   },
   {
@@ -98,31 +98,6 @@
       }
     ],
     "name": "BeneficiaryUpdate",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "previousCreator",
-        "type": "address"
-      },
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "updateCreator",
-        "type": "address"
-      },
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "instigator",
-        "type": "address"
-      }
-    ],
-    "name": "BondCreatorUpdate",
     "type": "event"
   },
   {
@@ -318,6 +293,31 @@
     "inputs": [
       {
         "indexed": true,
+        "internalType": "address",
+        "name": "previousCreator",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "updateCreator",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "instigator",
+        "type": "address"
+      }
+    ],
+    "name": "PerformanceBondCreatorUpdate",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
         "internalType": "uint256",
         "name": "daoId",
         "type": "uint256"
@@ -434,72 +434,6 @@
     "type": "function"
   },
   {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "daoId",
-        "type": "uint256"
-      },
-      {
-        "internalType": "address",
-        "name": "bond",
-        "type": "address"
-      },
-      {
-        "internalType": "string",
-        "name": "reason",
-        "type": "string"
-      }
-    ],
-    "name": "bondAllowRedemption",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "daoId",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "index",
-        "type": "uint256"
-      }
-    ],
-    "name": "bondAt",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "daoId",
-        "type": "uint256"
-      }
-    ],
-    "name": "bondCount",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "inputs": [],
     "name": "bondCreator",
     "outputs": [
@@ -510,190 +444,6 @@
       }
     ],
     "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "daoId",
-        "type": "uint256"
-      },
-      {
-        "internalType": "address",
-        "name": "bond",
-        "type": "address"
-      }
-    ],
-    "name": "bondPause",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "daoId",
-        "type": "uint256"
-      },
-      {
-        "internalType": "address",
-        "name": "bond",
-        "type": "address"
-      },
-      {
-        "internalType": "string",
-        "name": "data",
-        "type": "string"
-      }
-    ],
-    "name": "bondSetMetaData",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "daoId",
-        "type": "uint256"
-      },
-      {
-        "internalType": "address",
-        "name": "bond",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "replacement",
-        "type": "address"
-      }
-    ],
-    "name": "bondSetTreasury",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "daoId",
-        "type": "uint256"
-      },
-      {
-        "internalType": "address",
-        "name": "bond",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
-      },
-      {
-        "internalType": "string",
-        "name": "reason",
-        "type": "string"
-      }
-    ],
-    "name": "bondSlash",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "daoId",
-        "type": "uint256"
-      },
-      {
-        "internalType": "address",
-        "name": "bond",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "tokens",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
-      }
-    ],
-    "name": "bondSweepERC20Tokens",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "daoId",
-        "type": "uint256"
-      },
-      {
-        "internalType": "address",
-        "name": "bond",
-        "type": "address"
-      }
-    ],
-    "name": "bondUnpause",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "daoId",
-        "type": "uint256"
-      },
-      {
-        "internalType": "address",
-        "name": "bond",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "tokens",
-        "type": "address"
-      },
-      {
-        "internalType": "uint128",
-        "name": "timeLock",
-        "type": "uint128"
-      }
-    ],
-    "name": "bondUpdateRewardTimeLock",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "daoId",
-        "type": "uint256"
-      },
-      {
-        "internalType": "address",
-        "name": "bond",
-        "type": "address"
-      }
-    ],
-    "name": "bondWithdrawCollateral",
-    "outputs": [],
-    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
@@ -740,7 +490,7 @@
             "type": "string"
           }
         ],
-        "internalType": "struct Bond.MetaData",
+        "internalType": "struct PerformanceBond.MetaData",
         "name": "metadata",
         "type": "tuple"
       },
@@ -767,7 +517,7 @@
             "type": "uint256"
           }
         ],
-        "internalType": "struct Bond.Settings",
+        "internalType": "struct PerformanceBond.Settings",
         "name": "configuration",
         "type": "tuple"
       },
@@ -789,12 +539,12 @@
             "type": "uint128"
           }
         ],
-        "internalType": "struct Bond.TimeLockRewardPool[]",
+        "internalType": "struct PerformanceBond.TimeLockRewardPool[]",
         "name": "rewards",
         "type": "tuple[]"
       }
     ],
-    "name": "createManagedBond",
+    "name": "createManagedPerformanceBond",
     "outputs": [
       {
         "internalType": "address",
@@ -1171,6 +921,256 @@
     "type": "function"
   },
   {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "daoId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "bond",
+        "type": "address"
+      },
+      {
+        "internalType": "string",
+        "name": "reason",
+        "type": "string"
+      }
+    ],
+    "name": "performanceBondAllowRedemption",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "daoId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "index",
+        "type": "uint256"
+      }
+    ],
+    "name": "performanceBondAt",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "daoId",
+        "type": "uint256"
+      }
+    ],
+    "name": "performanceBondCount",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "daoId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "bond",
+        "type": "address"
+      }
+    ],
+    "name": "performanceBondPause",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "daoId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "bond",
+        "type": "address"
+      },
+      {
+        "internalType": "string",
+        "name": "data",
+        "type": "string"
+      }
+    ],
+    "name": "performanceBondSetMetaData",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "daoId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "bond",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "replacement",
+        "type": "address"
+      }
+    ],
+    "name": "performanceBondSetTreasury",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "daoId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "bond",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "string",
+        "name": "reason",
+        "type": "string"
+      }
+    ],
+    "name": "performanceBondSlash",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "daoId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "bond",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "tokens",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "performanceBondSweepERC20Tokens",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "daoId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "bond",
+        "type": "address"
+      }
+    ],
+    "name": "performanceBondUnpause",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "daoId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "bond",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "tokens",
+        "type": "address"
+      },
+      {
+        "internalType": "uint128",
+        "name": "timeLock",
+        "type": "uint128"
+      }
+    ],
+    "name": "performanceBondUpdateRewardTimeLock",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "daoId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "bond",
+        "type": "address"
+      }
+    ],
+    "name": "performanceBondWithdrawCollateral",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
     "inputs": [],
     "name": "proxiableUUID",
     "outputs": [
@@ -1279,19 +1279,6 @@
   {
     "inputs": [
       {
-        "internalType": "address",
-        "name": "factory",
-        "type": "address"
-      }
-    ],
-    "name": "setBondCreator",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
         "internalType": "uint256",
         "name": "daoId",
         "type": "uint256"
@@ -1321,6 +1308,19 @@
       }
     ],
     "name": "setDaoTreasury",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "factory",
+        "type": "address"
+      }
+    ],
+    "name": "setPerformanceBondCreator",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

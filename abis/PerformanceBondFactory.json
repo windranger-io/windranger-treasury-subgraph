@@ -57,7 +57,7 @@
           }
         ],
         "indexed": false,
-        "internalType": "struct Bond.MetaData",
+        "internalType": "struct PerformanceBond.MetaData",
         "name": "metadata",
         "type": "tuple"
       },
@@ -85,7 +85,7 @@
           }
         ],
         "indexed": false,
-        "internalType": "struct Bond.Settings",
+        "internalType": "struct PerformanceBond.Settings",
         "name": "configuration",
         "type": "tuple"
       },
@@ -108,7 +108,7 @@
           }
         ],
         "indexed": false,
-        "internalType": "struct Bond.TimeLockRewardPool[]",
+        "internalType": "struct PerformanceBond.TimeLockRewardPool[]",
         "name": "rewards",
         "type": "tuple[]"
       },
@@ -125,7 +125,7 @@
         "type": "address"
       }
     ],
-    "name": "CreateBond",
+    "name": "CreatePerformanceBond",
     "type": "event"
   },
   {
@@ -250,7 +250,7 @@
             "type": "string"
           }
         ],
-        "internalType": "struct Bond.MetaData",
+        "internalType": "struct PerformanceBond.MetaData",
         "name": "metadata",
         "type": "tuple"
       },
@@ -277,7 +277,7 @@
             "type": "uint256"
           }
         ],
-        "internalType": "struct Bond.Settings",
+        "internalType": "struct PerformanceBond.Settings",
         "name": "configuration",
         "type": "tuple"
       },
@@ -299,7 +299,7 @@
             "type": "uint128"
           }
         ],
-        "internalType": "struct Bond.TimeLockRewardPool[]",
+        "internalType": "struct PerformanceBond.TimeLockRewardPool[]",
         "name": "rewards",
         "type": "tuple[]"
       },
@@ -309,7 +309,7 @@
         "type": "address"
       }
     ],
-    "name": "createBond",
+    "name": "createPerformanceBond",
     "outputs": [
       {
         "internalType": "address",

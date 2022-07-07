@@ -3,11 +3,11 @@ schema:
   file: ./schema.graphql
 dataSources:
   - kind: ethereum/contract
-    name: BondMediator
+    name: PerformanceBondMediator
     network: {{ network }}
     source:
       address: "{{ contracts.bondMediator.address }}"
-      abi: BondMediator
+      abi: PerformanceBondMediator
       startBlock: {{ contracts.bondMediator.startBlock }}
     mapping:
       kind: ethereum/events
@@ -24,11 +24,11 @@ dataSources:
         - BondMediator
         - BondMediator__Sweep
       abis:
-        - name: BondMediator
-          file: ./abis/BondMediator.json
+        - name: PerformanceBondMediator
+          file: ./abis/PerformanceBondMediator.json
       eventHandlers:
-        - event: AddBond(indexed uint256,indexed address,indexed address)
-          handler: handleAddBond
+        - event: AddPerformanceBond(indexed uint256,indexed address,indexed address)
+          handler: handleAddPerformanceBond
         - event: AddCollateralWhitelist(indexed uint256,indexed address,indexed address)
           handler: handleAddCollateralWhitelist
         - event: AdminChanged(address,address)
@@ -37,8 +37,8 @@ dataSources:
           handler: handleBeaconUpgraded
         - event: BeneficiaryUpdate(indexed address,indexed address)
           handler: handleBeneficiaryUpdate
-        - event: BondCreatorUpdate(indexed address,indexed address,indexed address)
-          handler: handleBondCreatorUpdate
+        - event: PerformanceBondCreatorUpdate(indexed address,indexed address,indexed address)
+          handler: handlePerformanceBondCreatorUpdate
         - event: CreateDao(indexed uint256,indexed address,indexed address)
           handler: handleCreateDao
         - event: DaoMetaDataUpdate(indexed uint256,string,indexed address)
@@ -65,11 +65,11 @@ dataSources:
           handler: handleUpgraded
       file: ./src/bondMediator.ts
   - kind: ethereum/contract
-    name: BondFactory
+    name: PerformanceBondFactory
     network: {{ network }}
     source:
       address: "{{ contracts.bondFactory.address }}"
-      abi: BondFactory
+      abi: PerformanceBondFactory
       startBlock: {{ contracts.bondFactory.startBlock }}
     mapping:
       kind: ethereum/events
@@ -83,13 +83,13 @@ dataSources:
         - BondFactory
         - BondFactory__Sweep
       abis:
-        - name: BondFactory
-          file: ./abis/BondFactory.json
+        - name: PerformanceBondFactory
+          file: ./abis/PerformanceBondFactory.json
       eventHandlers:
         - event: BeneficiaryUpdate(indexed address,indexed address)
           handler: handleBeneficiaryUpdate
-        - event: CreateBond(indexed address,(string,string,string),(uint256,address,uint256,uint256),(address,uint128,uint128)[],indexed address,indexed address)
-          handler: handleCreateBond
+        - event: CreatePerformanceBond(indexed address,(string,string,string),(uint256,address,uint256,uint256),(address,uint128,uint128)[],indexed address,indexed address)
+          handler: handleCreatePerformanceBond
         - event: ERC20Sweep(indexed address,indexed address,uint256,indexed address)
           handler: handleERC20Sweep
         - event: OwnershipTransferred(indexed address,indexed address)
@@ -196,10 +196,10 @@ dataSources:
       file: ./src/stakingPoolFactory.ts
 templates:
   - kind: ethereum/contract
-    name: BondFactory
+    name: PerformanceBondFactory
     network: {{ network }}
     source:
-      abi: BondFactory
+      abi: PerformanceBondFactory
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.5
@@ -213,13 +213,13 @@ templates:
         - BondFactory
         - BondFactory__Sweep
       abis:
-        - name: BondFactory
-          file: ./abis/BondFactory.json
+        - name: PerformanceBondFactory
+          file: ./abis/PerformanceBondFactory.json
       eventHandlers:
         - event: BeneficiaryUpdate(indexed address,indexed address)
           handler: handleBeneficiaryUpdate
-        - event: CreateBond(indexed address,(string,string,string),(uint256,address,uint256,uint256),(address,uint128,uint128)[],indexed address,indexed address)
-          handler: handleCreateBond
+        - event: CreatePerformanceBond(indexed address,(string,string,string),(uint256,address,uint256,uint256),(address,uint128,uint128)[],indexed address,indexed address)
+          handler: handleCreatePerformanceBond
         - event: ERC20Sweep(indexed address,indexed address,uint256,indexed address)
           handler: handleERC20Sweep
         - event: OwnershipTransferred(indexed address,indexed address)
@@ -229,10 +229,10 @@ templates:
         - event: Unpaused(address)
           handler: handleUnpaused
   - kind: ethereum/contract
-    name: SingleCollateralMultiRewardBond
+    name: SingleCollateralMultiRewardPerformanceBond
     network: {{ network }}
     source:
-      abi: SingleCollateralMultiRewardBond
+      abi: SingleCollateralMultiRewardPerformanceBond
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.5
@@ -251,8 +251,8 @@ templates:
         - Bond__Sweep
         - Bond__Transfer
       abis:
-        - name: SingleCollateralMultiRewardBond
-          file: ./abis/SingleCollateralMultiRewardBond.json
+        - name: SingleCollateralMultiRewardPerformanceBond
+          file: ./abis/SingleCollateralMultiRewardPerformanceBond.json
       eventHandlers:
         - event: AllowRedemption(indexed address,string)
           handler: handleAllowRedemption

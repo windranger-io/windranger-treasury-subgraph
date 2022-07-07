@@ -35,7 +35,7 @@ import {
   Transfer as TransferFilter,
   Unpaused,
   WithdrawCollateral
-} from '../generated/templates/SingleCollateralMultiRewardBond/SingleCollateralMultiRewardBond';
+} from '../generated/templates/SingleCollateralMultiRewardPerformanceBond/SingleCollateralMultiRewardPerformanceBond';
 
 // - AllowRedemption(indexed address,string)
 export function handleAllowRedemption(event: AllowRedemption): void {
