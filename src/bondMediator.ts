@@ -317,7 +317,9 @@ export function handleInitialized(event: Initialized): void {
 
   bondFactory.mediator = bondMediator.id;
   bondFactory.factory = factory;
-  bondFactory.createdAtTimestamp = event.block.timestamp;
+  
+  bondFactory.createdAtTimestamp = 
+    bondFactory.createdAtTimestamp || event.block.timestamp;
   bondFactory.lastUpdatedTimestamp = event.block.timestamp;
 
   bondFactory.save();

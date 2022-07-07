@@ -311,7 +311,9 @@ export function handleInitialized(event: Initialized): void {
 
   stakingPoolFactory.mediator = stakingPoolMediator.id;
   stakingPoolFactory.factory = factory;
-  stakingPoolFactory.createdAtTimestamp = event.block.timestamp;
+  
+  stakingPoolFactory.createdAtTimestamp = 
+    stakingPoolFactory.createdAtTimestamp || event.block.timestamp;
   stakingPoolFactory.lastUpdatedTimestamp = event.block.timestamp;
 
   stakingPoolFactory.save();
