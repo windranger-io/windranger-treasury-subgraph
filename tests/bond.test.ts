@@ -1,6 +1,8 @@
+// - Testing tools
 import { Address, BigInt, ethereum } from '@graphprotocol/graph-ts';
 import { assert, clearStore, test } from 'matchstick-as/assembly/index';
 
+// - Helpers, consts and utils
 import {
   BOND_ADDRESS,
   createPerformanceBond,
@@ -11,6 +13,7 @@ import {
   newTransaction
 } from './utils';
 
+// - Event methods
 import {
   AllowRedemption,
   ClaimReward,
@@ -33,6 +36,8 @@ import {
   Unpaused,
   WithdrawCollateral
 } from '../generated/templates/SingleCollateralMultiRewardPerformanceBond/SingleCollateralMultiRewardPerformanceBond';
+
+// - Test subjects
 import {
   handleAllowRedemption,
   handleClaimReward,
@@ -812,3 +817,27 @@ test('Will handle WithdrawCollateral event', () => {
 
   clearStore();
 });
+
+// - Export so that these are named in the generated .wat files
+export {
+  handleAllowRedemption,
+  handleClaimReward,
+  handleDeposit,
+  handleERC20Sweep,
+  handleExpire,
+  handleFullCollateral,
+  handleMetaDataUpdate,
+  handleOwnershipTransferred,
+  handlePartialCollateral,
+  handlePaused,
+  handleRedeemableUpdate,
+  handleRedemption,
+  handleRedemptionTimestampUpdate,
+  handleRegisterReward,
+  handleRewardDebt,
+  handleRewardTimeLockUpdate,
+  handleSlashDeposits,
+  handleTransfer,
+  handleUnpaused,
+  handleWithdrawCollateral
+} from '../src/bond';

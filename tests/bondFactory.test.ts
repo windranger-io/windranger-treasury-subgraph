@@ -1,6 +1,8 @@
+// - Testing tools
 import { Address, ethereum } from '@graphprotocol/graph-ts';
 import { assert, clearStore, test } from 'matchstick-as/assembly/index';
 
+// - Helpers, consts and utils
 import {
   BOND_FACTORY_ADDRESS,
   createPerformanceBondFactory,
@@ -11,6 +13,7 @@ import {
   newTransaction
 } from './utils';
 
+// - Event methods
 import {
   BeneficiaryUpdate,
   CreatePerformanceBond,
@@ -20,6 +23,7 @@ import {
   Unpaused
 } from '../generated/PerformanceBondFactory/PerformanceBondFactory';
 
+// - Test subjects
 import {
   handleBeneficiaryUpdate,
   handleCreatePerformanceBond,
@@ -319,3 +323,13 @@ test('Will handle Unpaused event', () => {
 
   clearStore();
 });
+
+// - Export so that these are named in the generated .wat files
+export {
+  handleBeneficiaryUpdate,
+  handleCreatePerformanceBond,
+  handleERC20Sweep,
+  handleOwnershipTransferred,
+  handlePaused,
+  handleUnpaused
+} from '../src/bondFactory';

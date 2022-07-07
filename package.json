@@ -7,6 +7,7 @@
     "codegen": "graph codegen",
     "build": "graph build",
     "test": "graph test",
+    "coverage": "graph test -- -c",
     "prettier": "prettier --write '@(tests|src)/**/*.@(ts)'",
     "lint": "eslint '@(tests|src)/**/*.@(ts)'",
     "lint:fix": "yarn run prettier && yarn run lint --fix",

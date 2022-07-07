@@ -1,6 +1,8 @@
+// - Testing tools
 import { Address, BigInt, ethereum } from '@graphprotocol/graph-ts';
 import { assert, clearStore, test } from 'matchstick-as/assembly/index';
 
+// - Helpers, consts and utils
 import {
   createStakingPool,
   createStakingPoolReward,
@@ -13,6 +15,7 @@ import {
   STAKINGPOOL_REWARD_ADDRESS
 } from './utils';
 
+// - Event methods
 import {
   BeneficiaryUpdate,
   Deposit,
@@ -27,6 +30,7 @@ import {
   WithdrawStake
 } from '../generated/templates/StakingPool/StakingPool';
 
+// - Test subjects
 import {
   handleBeneficiaryUpdate,
   handleDeposit,
@@ -435,3 +439,18 @@ test('Will handle WithdrawStake event', () => {
 
   clearStore();
 });
+
+// - Export so that these are named in the generated .wat files
+export {
+  handleBeneficiaryUpdate,
+  handleDeposit,
+  handleEmergencyMode,
+  handleERC20Sweep,
+  handleInitializeRewards,
+  handleOwnershipTransferred,
+  handlePaused,
+  handleRewardsAvailableTimestamp,
+  handleUnpaused,
+  handleWithdrawRewards,
+  handleWithdrawStake
+} from '../src/stakingPool';

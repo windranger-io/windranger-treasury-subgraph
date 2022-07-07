@@ -1,6 +1,8 @@
+// - Testing tools
 import { Address, Bytes, ethereum } from '@graphprotocol/graph-ts';
 import { assert, clearStore, createMockedFunction, test } from 'matchstick-as/assembly/index';
 
+// - Helpers, consts and utils
 import {
   BOND_ADDRESS,
   BOND_MEDIATOR_ADDRESS,
@@ -17,12 +19,14 @@ import {
   newTransaction
 } from './utils';
 
+// - Entities we will be modifying
 import {
   Bond__DAO__CollateralWhitelist as DAOCollateralWhitelist,
   Bond__DAO__Role as DAORole,
   Bond__Role as Role
 } from '../generated/schema';
 
+// - Event methods
 import {
   AddPerformanceBond,
   AddCollateralWhitelist,
@@ -45,6 +49,7 @@ import {
   Upgraded
 } from '../generated/PerformanceBondMediator/PerformanceBondMediator';
 
+// - Test subjects
 import {
   handleAddPerformanceBond,
   handleAddCollateralWhitelist,
@@ -736,3 +741,26 @@ test('Will handle Upgraded event', () => {
 
   clearStore();
 });
+
+// - export so that these are named in the generated .wat files
+export {
+  handleAddPerformanceBond,
+  handleAddCollateralWhitelist,
+  handleAdminChanged,
+  handleBeaconUpgraded,
+  handleBeneficiaryUpdate,
+  handlePerformanceBondCreatorUpdate,
+  handleCreateDao,
+  handleDaoMetaDataUpdate,
+  handleDaoTreasuryUpdate,
+  handleERC20Sweep,
+  handleGrantDaoRole,
+  handleGrantGlobalRole,
+  handleInitialized,
+  handlePaused,
+  handleRemoveCollateralWhitelist,
+  handleRevokeDaoRole,
+  handleRevokeGlobalRole,
+  handleUnpaused,
+  handleUpgraded
+} from '../src/bondMediator';

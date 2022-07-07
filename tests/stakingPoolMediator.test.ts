@@ -1,6 +1,8 @@
+// - Testing tools
 import { Address, Bytes, ethereum } from '@graphprotocol/graph-ts';
 import { assert, clearStore, createMockedFunction, test } from 'matchstick-as/assembly/index';
 
+// - Helpers, consts and utils
 import {
   createStakingPool,
   createStakingPoolFactory,
@@ -17,12 +19,14 @@ import {
   STAKINGPOOL_ADDRESS
 } from './utils';
 
+// - Entities we will be modifying
 import {
   StakingPool__DAO__CollateralWhitelist as DAOCollateralWhitelist,
   StakingPool__DAO__Role as DAORole,
   StakingPool__Role as Role
 } from '../generated/schema';
 
+// - Event methods
 import {
   AddStakingPool,
   AddCollateralWhitelist,
@@ -45,6 +49,7 @@ import {
   Upgraded
 } from '../generated/StakingPoolMediator/StakingPoolMediator';
 
+// - Test subjects
 import {
   handleAddStakingPool,
   handleAddCollateralWhitelist,
@@ -829,3 +834,26 @@ test('Will handle Upgraded event', () => {
 
   clearStore();
 });
+
+// - Export so that these are named in the generated .wat files
+export {
+  handleAddStakingPool,
+  handleAddCollateralWhitelist,
+  handleAdminChanged,
+  handleBeaconUpgraded,
+  handleBeneficiaryUpdate,
+  handleStakingPoolCreatorUpdate,
+  handleCreateDao,
+  handleDaoMetaDataUpdate,
+  handleDaoTreasuryUpdate,
+  handleERC20Sweep,
+  handleGrantDaoRole,
+  handleGrantGlobalRole,
+  handleInitialized,
+  handlePaused,
+  handleRemoveCollateralWhitelist,
+  handleRevokeDaoRole,
+  handleRevokeGlobalRole,
+  handleUnpaused,
+  handleUpgraded
+} from '../src/stakingPoolMediator';

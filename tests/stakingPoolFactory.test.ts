@@ -1,6 +1,8 @@
+// - Testing tools
 import { Address, ethereum } from '@graphprotocol/graph-ts';
 import { assert, clearStore, test } from 'matchstick-as/assembly/index';
 
+// - Helpers, consts and utils
 import {
   defaultBigInt,
   defaultLogType,
@@ -11,6 +13,7 @@ import {
   defaultAddress
 } from './utils';
 
+// - Event methods
 import {
   Paused,
   Unpaused,
@@ -20,6 +23,7 @@ import {
   ERC20Sweep
 } from '../generated/StakingPoolFactory/StakingPoolFactory';
 
+// - Test subjects
 import {
   handlePaused,
   handleUnpaused,
@@ -326,3 +330,13 @@ test('Will handle Unpaused event', () => {
 
   clearStore();
 });
+
+// - Export so that these are named in the generated .wat files
+export {
+  handlePaused,
+  handleUnpaused,
+  handleStakingPoolCreated,
+  handleBeneficiaryUpdate,
+  handleOwnershipTransferred,
+  handleERC20Sweep
+} from '../src/stakingPoolFactory';
