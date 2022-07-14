@@ -10,11 +10,11 @@
       "startBlock": 10978751
     },
     "stakingPoolMediator": {
-      "address": "0x769fCBFcAaEb1420Ea6F66CdC7201be6967E7426",
+      "address": "0x09554dB7CA1E6bEE9E58401C2fF7d3f838c8b2bB",
       "startBlock": 10978801
     },
     "stakingPoolFactory": {
-      "address": "0x8D86D59b9f0c226B7184eDb15e8A09Ac4A5EbA74",
+      "address": "0x8814EB273cCDa46392EAf316fe04527A613B38f8",
       "startBlock": 10978800
     }
   }
