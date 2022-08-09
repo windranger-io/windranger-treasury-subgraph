@@ -115,69 +115,85 @@
         "type": "address"
       },
       {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "daoId",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint128",
+            "name": "minTotalPoolStake",
+            "type": "uint128"
+          },
+          {
+            "internalType": "uint128",
+            "name": "maxTotalPoolStake",
+            "type": "uint128"
+          },
+          {
+            "internalType": "uint128",
+            "name": "minimumContribution",
+            "type": "uint128"
+          },
+          {
+            "internalType": "uint32",
+            "name": "epochDuration",
+            "type": "uint32"
+          },
+          {
+            "internalType": "uint32",
+            "name": "epochStartTimestamp",
+            "type": "uint32"
+          },
+          {
+            "internalType": "address",
+            "name": "treasury",
+            "type": "address"
+          },
+          {
+            "internalType": "contract IERC20",
+            "name": "stakeToken",
+            "type": "address"
+          },
+          {
+            "components": [
+              {
+                "internalType": "contract IERC20",
+                "name": "tokens",
+                "type": "address"
+              },
+              {
+                "internalType": "uint256",
+                "name": "maxAmount",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "ratio",
+                "type": "uint256"
+              }
+            ],
+            "internalType": "struct StakingPoolLib.Reward[]",
+            "name": "rewardTokens",
+            "type": "tuple[]"
+          },
+          {
+            "internalType": "enum StakingPoolLib.RewardType",
+            "name": "rewardType",
+            "type": "uint8"
+          }
+        ],
         "indexed": false,
-        "internalType": "address",
-        "name": "treasury",
-        "type": "address"
+        "internalType": "struct StakingPoolLib.Config",
+        "name": "config",
+        "type": "tuple"
       },
       {
         "indexed": true,
         "internalType": "address",
         "name": "creator",
         "type": "address"
-      },
-      {
-        "components": [
-          {
-            "internalType": "contract IERC20",
-            "name": "tokens",
-            "type": "address"
-          },
-          {
-            "internalType": "uint256",
-            "name": "maxAmount",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "ratio",
-            "type": "uint256"
-          }
-        ],
-        "indexed": false,
-        "internalType": "struct StakingPoolLib.Reward[]",
-        "name": "rewardTokens",
-        "type": "tuple[]"
-      },
-      {
-        "indexed": false,
-        "internalType": "address",
-        "name": "stakeToken",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint128",
-        "name": "epochStartTimestamp",
-        "type": "uint128"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint128",
-        "name": "epochDuration",
-        "type": "uint128"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint128",
-        "name": "minimumContribution",
-        "type": "uint128"
-      },
-      {
-        "indexed": false,
-        "internalType": "enum StakingPoolLib.RewardType",
-        "name": "rewardType",
-        "type": "uint8"
       }
     ],
     "name": "StakingPoolCreated",

@@ -1011,6 +1011,24 @@
         "type": "uint256"
       },
       {
+        "internalType": "string",
+        "name": "replacement",
+        "type": "string"
+      }
+    ],
+    "name": "setDaoMetaData",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "daoId",
+        "type": "uint256"
+      },
+      {
         "internalType": "address",
         "name": "replacement",
         "type": "address"
