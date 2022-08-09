@@ -21,7 +21,7 @@ type BondMediator @entity {
 
   daos: [Bond__DAO!]! @derivedFrom(field: "mediator")
   daoRoles: [Bond__DAO__Role!]! @derivedFrom(field: "mediator")
-  
+
   roles: [Bond__Role!]! @derivedFrom(field: "mediator")
 
   sweeps: [BondMediator__Sweep!]! @derivedFrom(field: "mediator")
@@ -84,7 +84,7 @@ type Bond @entity {
   owner: Bytes!
   treasury: Bytes!
   beneficiary: Bytes!
-  
+
   dao: Bond__DAO!
   factory: BondFactory!
   mediator: BondMediator!
@@ -92,7 +92,7 @@ type Bond @entity {
   paused: Boolean!
   expired: Boolean!
 
-  metadata: Bond__Metadata! @derivedFrom(field: "bond")
+  metadata: Bond__Metadata @derivedFrom(field: "bond")
   configuration: Bond__Configuration! @derivedFrom(field: "bond")
 
   rewards: [Bond__RewardPool!]! @derivedFrom(field: "bond")
@@ -143,12 +143,12 @@ type Bond__DAO @entity {
 
   treasury: Bytes!
   owner: Bytes!
-  
-  metadata: Bond__DAO__Metadata! @derivedFrom(field: "dao")
+
+  metadata: Bond__DAO__Metadata @derivedFrom(field: "dao")
 
   bonds: [Bond!]! @derivedFrom(field: "dao")
   roles: [Bond__DAO__Role!]! @derivedFrom(field: "dao")
-  
+
   collateralWhitelist: [Bond__DAO__CollateralWhitelist!]! @derivedFrom(field: "dao")
 
   mediator: BondMediator!
@@ -199,7 +199,7 @@ type Bond__DAO__CollateralWhitelist @entity {
   lastUpdatedTimestamp: BigInt!
   createdAtTimestamp: BigInt!
 }
- 
+
 # id = `${bondAddress.toHex()}-${depositor.toHex()}-${collateralTokens.toHex()}`;
 type Bond__Deposit @entity {
   id: ID!
@@ -344,9 +344,9 @@ type StakingPoolFactory @entity {
 
   dao: StakingPool__DAO!
   mediator: StakingPoolMediator!
-  
+
   paused: Boolean!
-  
+
   owner: Bytes!
   beneficiary: Bytes!
 
@@ -375,7 +375,7 @@ type StakingPoolFactory__Sweep @entity {
 type StakingPoolMediator @entity {
   id: ID!
   mediator: Bytes!
-  
+
   admin: Bytes!
   beacon: Bytes!
   beneficiary: Bytes!
@@ -391,7 +391,7 @@ type StakingPoolMediator @entity {
 
   daos: [StakingPool__DAO!]! @derivedFrom(field: "mediator")
   daoRoles: [StakingPool__DAO__Role!]! @derivedFrom(field: "mediator")
-  
+
   roles: [StakingPool__Role!]! @derivedFrom(field: "mediator")
 
   lastUpdatedTimestamp: BigInt!
@@ -431,7 +431,7 @@ type StakingPool @entity {
   stakeToken: Bytes!
   amount: BigInt!
   minimumContribution: BigInt!
-  
+
   epochStartTimestamp: BigInt!
   epochDuration: BigInt!
 
@@ -456,11 +456,11 @@ type StakingPool__DAO @entity {
 
   treasury: Bytes!
   owner: Bytes!
-  
-  metadata: StakingPool__DAO__Metadata! @derivedFrom(field: "dao")
+
+  metadata: StakingPool__DAO__Metadata @derivedFrom(field: "dao")
 
   roles: [StakingPool__DAO__Role!]! @derivedFrom(field: "dao")
-  
+
   stakingPools: [StakingPool!]! @derivedFrom(field: "dao")
 
   collateralWhitelist: [StakingPool__DAO__CollateralWhitelist!]! @derivedFrom(field: "dao")
