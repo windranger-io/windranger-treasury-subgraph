@@ -16,7 +16,18 @@ import {
   defaultBigInt,
   defaultLogType,
   newBlock,
-  newTransaction
+  newTransaction,
+  INSTIGATOR,
+  ADMIN_NEW,
+  ADMIN_OLD,
+  BENEFICIARY,
+  FACTORY_NEW,
+  FACTORY_OLD,
+  TREASURY,
+  TOKEN,
+  ACCOUNT,
+  IMPLEMENTATION,
+  BEACON
 } from './utils';
 
 // - Entities we will be modifying
@@ -75,7 +86,6 @@ import {
 // - AddPerformanceBond(indexed uint256,indexed address,indexed address)
 test('Will handle AddPerformanceBond event', () => {
   const bondAddress = Address.fromString(BOND_ADDRESS);
-  const instigator = Address.fromString('0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266');
 
   createPerformanceBondMediator();
   createPerformanceBondDAO();
@@ -88,11 +98,11 @@ test('Will handle AddPerformanceBond event', () => {
       defaultBigInt,
       defaultLogType,
       newBlock(),
-      newTransaction(instigator.toHex()),
+      newTransaction(INSTIGATOR.toHex()),
       [
         new ethereum.EventParam('daoId', ethereum.Value.fromI32(DAO_ID)),
         new ethereum.EventParam('bond', ethereum.Value.fromAddress(bondAddress)),
-        new ethereum.EventParam('instigator', ethereum.Value.fromAddress(instigator))
+        new ethereum.EventParam('instigator', ethereum.Value.fromAddress(INSTIGATOR))
       ],
       null
     )
@@ -109,11 +119,6 @@ test('Will handle AddPerformanceBond event', () => {
 
 // - AddCollateralWhitelist(indexed uint256,indexed address,indexed address)
 test('Will handle AddCollateralWhitelist event', () => {
-  const instigator = Address.fromString('0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266');
-  const treasuryAddress = Address.fromString(
-    '0x7B4f352Cd40114f12e82fC675b5BA8C7582FC513'
-  );
-
   createPerformanceBondDAO();
 
   handleAddCollateralWhitelist(
@@ -123,20 +128,20 @@ test('Will handle AddCollateralWhitelist event', () => {
       defaultBigInt,
       defaultLogType,
       newBlock(),
-      newTransaction(instigator.toHex()),
+      newTransaction(INSTIGATOR.toHex()),
       [
         new ethereum.EventParam('daoId', ethereum.Value.fromI32(DAO_ID)),
         new ethereum.EventParam(
           'collateralTokens',
-          ethereum.Value.fromAddress(treasuryAddress)
+          ethereum.Value.fromAddress(TREASURY)
         ),
-        new ethereum.EventParam('instigator', ethereum.Value.fromAddress(instigator))
+        new ethereum.EventParam('instigator', ethereum.Value.fromAddress(INSTIGATOR))
       ],
       null
     )
   );
 
-  const whitelistId = `${DAO_ID_HEX}-${treasuryAddress.toHex()}`;
+  const whitelistId = `${DAO_ID_HEX}-${TREASURY.toHex()}`;
 
   assert.fieldEquals('Bond__DAO', DAO_ID_HEX, 'collateralWhitelist', `[${whitelistId}]`);
 
@@ -145,7 +150,7 @@ test('Will handle AddCollateralWhitelist event', () => {
     'Bond__DAO__CollateralWhitelist',
     whitelistId,
     'token',
-    `${treasuryAddress.toHex()}`
+    `${TREASURY.toHex()}`
   );
 
   clearStore();
@@ -153,10 +158,6 @@ test('Will handle AddCollateralWhitelist event', () => {
 
 // - AdminChanged(address,address)
 test('Will handle AdminChanged event', () => {
-  const instigator = Address.fromString('0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266');
-  const newAdmin = Address.fromString('0x70997970c51812dc3a010c7d01b50e0d17dc79c8');
-  const previousAdmin = Address.fromString('0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266');
-
   createPerformanceBondMediator();
 
   handleAdminChanged(
@@ -166,28 +167,25 @@ test('Will handle AdminChanged event', () => {
       defaultBigInt,
       defaultLogType,
       newBlock(),
-      newTransaction(instigator.toHex()),
+      newTransaction(INSTIGATOR.toHex()),
       [
         new ethereum.EventParam(
           'previousAdmin',
-          ethereum.Value.fromAddress(previousAdmin)
+          ethereum.Value.fromAddress(ADMIN_OLD)
         ),
-        new ethereum.EventParam('newAdmin', ethereum.Value.fromAddress(newAdmin))
+        new ethereum.EventParam('newAdmin', ethereum.Value.fromAddress(ADMIN_NEW))
       ],
       null
     )
   );
 
-  assert.fieldEquals('BondMediator', BOND_MEDIATOR_ADDRESS, 'admin', newAdmin.toHex());
+  assert.fieldEquals('BondMediator', BOND_MEDIATOR_ADDRESS, 'admin', ADMIN_NEW.toHex());
 
   clearStore();
 });
 
 // - BeaconUpgraded(indexed address)
 test('Will handle BeaconUpgraded event', () => {
-  const instigator = Address.fromString('0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266');
-  const beacon = Address.fromString('0x70997970c51812dc3a010c7d01b50e0d17dc79c8');
-
   createPerformanceBondMediator();
 
   handleBeaconUpgraded(
@@ -197,22 +195,19 @@ test('Will handle BeaconUpgraded event', () => {
       defaultBigInt,
       defaultLogType,
       newBlock(),
-      newTransaction(instigator.toHex()),
-      [new ethereum.EventParam('beacon', ethereum.Value.fromAddress(beacon))],
+      newTransaction(INSTIGATOR.toHex()),
+      [new ethereum.EventParam('beacon', ethereum.Value.fromAddress(BEACON))],
       null
     )
   );
 
-  assert.fieldEquals('BondMediator', BOND_MEDIATOR_ADDRESS, 'beacon', beacon.toHex());
+  assert.fieldEquals('BondMediator', BOND_MEDIATOR_ADDRESS, 'beacon', BEACON.toHex());
 
   clearStore();
 });
 
 // - BeneficiaryUpdate(indexed address,indexed address)
 test('Will handle BeneficiaryUpdate event', () => {
-  const instigator = Address.fromString('0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266');
-  const beneficiary = Address.fromString('0x70997970c51812dc3a010c7d01b50e0d17dc79c8');
-
   createPerformanceBondMediator();
 
   handleBeneficiaryUpdate(
@@ -222,10 +217,10 @@ test('Will handle BeneficiaryUpdate event', () => {
       defaultBigInt,
       defaultLogType,
       newBlock(),
-      newTransaction(instigator.toHex()),
+      newTransaction(INSTIGATOR.toHex()),
       [
-        new ethereum.EventParam('beneficiary', ethereum.Value.fromAddress(beneficiary)),
-        new ethereum.EventParam('instigator', ethereum.Value.fromAddress(instigator))
+        new ethereum.EventParam('beneficiary', ethereum.Value.fromAddress(BENEFICIARY)),
+        new ethereum.EventParam('instigator', ethereum.Value.fromAddress(INSTIGATOR))
       ],
       null
     )
@@ -235,7 +230,7 @@ test('Will handle BeneficiaryUpdate event', () => {
     'BondMediator',
     BOND_MEDIATOR_ADDRESS,
     'beneficiary',
-    beneficiary.toHex()
+    BENEFICIARY.toHex()
   );
 
   clearStore();
@@ -243,10 +238,6 @@ test('Will handle BeneficiaryUpdate event', () => {
 
 // - PerformanceBondCreatorUpdate(indexed address,indexed address,indexed address)
 test('Will handle PerformanceBondCreatorUpdate event', () => {
-  const instigator = Address.fromString('0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266');
-  const prevFactory = Address.fromString('0x70997970c51812dc3a010c7d01b50e0d17dc79c8');
-  const factory = Address.fromString('0x70997970c51812dc3a010c7d01b50e0d17dc79c8');
-
   createPerformanceBondFactory();
   createPerformanceBondMediator();
 
@@ -259,25 +250,25 @@ test('Will handle PerformanceBondCreatorUpdate event', () => {
       defaultBigInt,
       defaultLogType,
       newBlock(),
-      newTransaction(instigator.toHex()),
+      newTransaction(INSTIGATOR.toHex()),
       [
         new ethereum.EventParam(
           'previousCreator',
-          ethereum.Value.fromAddress(prevFactory)
+          ethereum.Value.fromAddress(FACTORY_OLD)
         ),
-        new ethereum.EventParam('updateCreator', ethereum.Value.fromAddress(factory)),
-        new ethereum.EventParam('instigator', ethereum.Value.fromAddress(instigator))
+        new ethereum.EventParam('updateCreator', ethereum.Value.fromAddress(FACTORY_NEW)),
+        new ethereum.EventParam('instigator', ethereum.Value.fromAddress(INSTIGATOR))
       ],
       null
     )
   );
 
-  assert.fieldEquals('BondMediator', BOND_MEDIATOR_ADDRESS, 'factory', factory.toHex());
+  assert.fieldEquals('BondMediator', BOND_MEDIATOR_ADDRESS, 'factory', FACTORY_NEW.toHex());
   assert.fieldEquals(
     'BondMediator',
     BOND_MEDIATOR_ADDRESS,
     'factories',
-    `[${factory.toHex()}]`
+    `[${FACTORY_NEW.toHex()}]`
   );
 
   clearStore();
@@ -285,9 +276,6 @@ test('Will handle PerformanceBondCreatorUpdate event', () => {
 
 // - CreateDao(indexed uint256,indexed address,indexed address)
 test('Will handle CreateDao event', () => {
-  const instigator = Address.fromString('0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266');
-  const treasury = Address.fromString('0x70997970c51812dc3a010c7d01b50e0d17dc79c8');
-
   createPerformanceBondMediator();
 
   handleCreateDao(
@@ -297,17 +285,17 @@ test('Will handle CreateDao event', () => {
       defaultBigInt,
       defaultLogType,
       newBlock(),
-      newTransaction(instigator.toHex()),
+      newTransaction(INSTIGATOR.toHex()),
       [
         new ethereum.EventParam('id', ethereum.Value.fromI32(DAO_ID)),
-        new ethereum.EventParam('treasury', ethereum.Value.fromAddress(treasury)),
-        new ethereum.EventParam('instigator', ethereum.Value.fromAddress(instigator))
+        new ethereum.EventParam('treasury', ethereum.Value.fromAddress(TREASURY)),
+        new ethereum.EventParam('instigator', ethereum.Value.fromAddress(INSTIGATOR))
       ],
       null
     )
   );
 
-  assert.fieldEquals('Bond__DAO', DAO_ID_HEX, 'treasury', treasury.toHex());
+  assert.fieldEquals('Bond__DAO', DAO_ID_HEX, 'treasury', TREASURY.toHex());
   assert.fieldEquals('BondMediator', BOND_MEDIATOR_ADDRESS, 'daos', `[${DAO_ID_HEX}]`);
 
   clearStore();
@@ -315,7 +303,6 @@ test('Will handle CreateDao event', () => {
 
 // - DaoMetaDataUpdate(indexed uint256,string,indexed address)
 test('Will handle DaoMetaDataUpdate event', () => {
-  const instigator = Address.fromString('0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266');
   const data = 'sample data;';
 
   createPerformanceBondDAO();
@@ -328,11 +315,11 @@ test('Will handle DaoMetaDataUpdate event', () => {
       defaultBigInt,
       defaultLogType,
       newBlock(),
-      newTransaction(instigator.toHex()),
+      newTransaction(INSTIGATOR.toHex()),
       [
         new ethereum.EventParam('daoId', ethereum.Value.fromI32(DAO_ID)),
         new ethereum.EventParam('data', ethereum.Value.fromString(data)),
-        new ethereum.EventParam('instigator', ethereum.Value.fromAddress(instigator))
+        new ethereum.EventParam('instigator', ethereum.Value.fromAddress(INSTIGATOR))
       ],
       null
     )
@@ -346,9 +333,6 @@ test('Will handle DaoMetaDataUpdate event', () => {
 
 // - DaoTreasuryUpdate(indexed uint256,indexed address,indexed address)
 test('Will handle DaoTreasuryUpdate event', () => {
-  const instigator = Address.fromString('0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266');
-  const treasury = Address.fromString('0x70997970c51812dc3a010c7d01b50e0d17dc79c8');
-
   createPerformanceBondDAO();
   createPerformanceBondMediator();
 
@@ -359,26 +343,23 @@ test('Will handle DaoTreasuryUpdate event', () => {
       defaultBigInt,
       defaultLogType,
       newBlock(),
-      newTransaction(instigator.toHex()),
+      newTransaction(INSTIGATOR.toHex()),
       [
         new ethereum.EventParam('daoId', ethereum.Value.fromI32(DAO_ID)),
-        new ethereum.EventParam('treasury', ethereum.Value.fromAddress(treasury)),
-        new ethereum.EventParam('instigator', ethereum.Value.fromAddress(instigator))
+        new ethereum.EventParam('treasury', ethereum.Value.fromAddress(TREASURY)),
+        new ethereum.EventParam('instigator', ethereum.Value.fromAddress(INSTIGATOR))
       ],
       null
     )
   );
 
-  assert.fieldEquals('Bond__DAO', DAO_ID_HEX, 'treasury', treasury.toHex());
+  assert.fieldEquals('Bond__DAO', DAO_ID_HEX, 'treasury', TREASURY.toHex());
 
   clearStore();
 });
 
 // - ERC20Sweep(indexed address,indexed address,uint256,indexed address)
 test('Will handle ERC20Sweep event', () => {
-  const instigator = Address.fromString('0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266');
-  const beneficiary = Address.fromString('0x70997970c51812dc3a010c7d01b50e0d17dc79c8');
-  const tokens = Address.fromString('0x8626f6940e2eb28930efb4cef49b2d1f2c9c1199');
   const amount = 100;
 
   const sweepId = `${defaultAddress.toHex()}-${defaultBigInt.toHex()}`;
@@ -392,12 +373,12 @@ test('Will handle ERC20Sweep event', () => {
       defaultBigInt,
       defaultLogType,
       newBlock(),
-      newTransaction(instigator.toHex()),
+      newTransaction(INSTIGATOR.toHex()),
       [
-        new ethereum.EventParam('beneficiary', ethereum.Value.fromAddress(beneficiary)),
-        new ethereum.EventParam('tokens', ethereum.Value.fromAddress(tokens)),
+        new ethereum.EventParam('beneficiary', ethereum.Value.fromAddress(BENEFICIARY)),
+        new ethereum.EventParam('tokens', ethereum.Value.fromAddress(TOKEN)),
         new ethereum.EventParam('amount', ethereum.Value.fromI32(amount)),
-        new ethereum.EventParam('instigator', ethereum.Value.fromAddress(instigator))
+        new ethereum.EventParam('instigator', ethereum.Value.fromAddress(INSTIGATOR))
       ],
       null
     )
@@ -406,12 +387,12 @@ test('Will handle ERC20Sweep event', () => {
   assert.fieldEquals('BondMediator', BOND_MEDIATOR_ADDRESS, 'sweeps', `[${sweepId}]`);
 
   assert.fieldEquals('BondMediator__Sweep', sweepId, 'amount', `${amount}`);
-  assert.fieldEquals('BondMediator__Sweep', sweepId, 'token', `${tokens.toHex()}`);
+  assert.fieldEquals('BondMediator__Sweep', sweepId, 'token', `${TOKEN.toHex()}`);
   assert.fieldEquals(
     'BondMediator__Sweep',
     sweepId,
     'beneficiary',
-    `${beneficiary.toHex()}`
+    `${BENEFICIARY.toHex()}`
   );
 
   clearStore();
@@ -419,8 +400,6 @@ test('Will handle ERC20Sweep event', () => {
 
 // - GrantDaoRole(indexed uint256,indexed bytes32,address,indexed address)
 test('Will handle GrantDaoRole event', () => {
-  const instigator = Address.fromString('0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266');
-  const account = Address.fromString('0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266');
   const role = Bytes.fromI32(1);
 
   createPerformanceBondDAO();
@@ -433,22 +412,22 @@ test('Will handle GrantDaoRole event', () => {
       defaultBigInt,
       defaultLogType,
       newBlock(),
-      newTransaction(instigator.toHex()),
+      newTransaction(INSTIGATOR.toHex()),
       [
         new ethereum.EventParam('daoId', ethereum.Value.fromI32(DAO_ID)),
         new ethereum.EventParam('role', ethereum.Value.fromBytes(role)),
-        new ethereum.EventParam('account', ethereum.Value.fromAddress(account)),
-        new ethereum.EventParam('instigator', ethereum.Value.fromAddress(instigator))
+        new ethereum.EventParam('account', ethereum.Value.fromAddress(ACCOUNT)),
+        new ethereum.EventParam('instigator', ethereum.Value.fromAddress(INSTIGATOR))
       ],
       null
     )
   );
 
-  const roleId = `${DAO_ID_HEX}-${role.toHex()}-${account.toHex()}`;
+  const roleId = `${DAO_ID_HEX}-${role.toHex()}-${ACCOUNT.toHex()}`;
 
   assert.fieldEquals('BondMediator', BOND_MEDIATOR_ADDRESS, 'daoRoles', `[${roleId}]`);
 
-  assert.fieldEquals('Bond__DAO__Role', roleId, 'account', account.toHex());
+  assert.fieldEquals('Bond__DAO__Role', roleId, 'account', ACCOUNT.toHex());
   assert.fieldEquals('Bond__DAO__Role', roleId, 'role', role.toHex());
 
   clearStore();
@@ -456,8 +435,6 @@ test('Will handle GrantDaoRole event', () => {
 
 // - GrantGlobalRole(bytes32,address,indexed address)
 test('Will handle GrantGlobalRole event', () => {
-  const instigator = Address.fromString('0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266');
-  const account = Address.fromString('0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266');
   const role = Bytes.fromI32(1);
 
   createPerformanceBondDAO();
@@ -470,21 +447,21 @@ test('Will handle GrantGlobalRole event', () => {
       defaultBigInt,
       defaultLogType,
       newBlock(),
-      newTransaction(instigator.toHex()),
+      newTransaction(INSTIGATOR.toHex()),
       [
         new ethereum.EventParam('indexedrole', ethereum.Value.fromBytes(role)),
-        new ethereum.EventParam('account', ethereum.Value.fromAddress(account)),
-        new ethereum.EventParam('instigator', ethereum.Value.fromAddress(instigator))
+        new ethereum.EventParam('account', ethereum.Value.fromAddress(ACCOUNT)),
+        new ethereum.EventParam('instigator', ethereum.Value.fromAddress(INSTIGATOR))
       ],
       null
     )
   );
 
-  const roleId = `${role.toHex()}-${account.toHex()}`;
+  const roleId = `${role.toHex()}-${ACCOUNT.toHex()}`;
 
   assert.fieldEquals('BondMediator', BOND_MEDIATOR_ADDRESS, 'roles', `[${roleId}]`);
 
-  assert.fieldEquals('Bond__Role', roleId, 'account', account.toHex());
+  assert.fieldEquals('Bond__Role', roleId, 'account', ACCOUNT.toHex());
   assert.fieldEquals('Bond__Role', roleId, 'role', role.toHex());
 
   clearStore();
@@ -492,12 +469,9 @@ test('Will handle GrantGlobalRole event', () => {
 
 // - Initialized(uint8)
 test('Will handle Initialized event', () => {
-  const instigator = Address.fromString('0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266');
-  const factory = Address.fromString('0x70997970c51812dc3a010c7d01b50e0d17dc79c8');
-
   const contractAddress = Address.fromString(BOND_MEDIATOR_ADDRESS);
   createMockedFunction(contractAddress, "bondCreator", "bondCreator():(address)")
-    .returns([ethereum.Value.fromAddress(factory)]);
+    .returns([ethereum.Value.fromAddress(FACTORY_NEW)]);
         
   createPerformanceBondFactory();
   createPerformanceBondMediator();
@@ -511,7 +485,7 @@ test('Will handle Initialized event', () => {
       defaultBigInt,
       defaultLogType,
       newBlock(),
-      newTransaction(instigator.toHex()),
+      newTransaction(INSTIGATOR.toHex()),
       [
         new ethereum.EventParam('version', ethereum.Value.fromI32(0)),
       ],
@@ -519,12 +493,12 @@ test('Will handle Initialized event', () => {
     )
   );
 
-  assert.fieldEquals('BondMediator', BOND_MEDIATOR_ADDRESS, 'factory', factory.toHex());
+  assert.fieldEquals('BondMediator', BOND_MEDIATOR_ADDRESS, 'factory', FACTORY_NEW.toHex());
   assert.fieldEquals(
     'BondMediator',
     BOND_MEDIATOR_ADDRESS,
     'factories',
-    `[${factory.toHex()}]`
+    `[${FACTORY_NEW.toHex()}]`
   );
 
   clearStore();
@@ -532,8 +506,6 @@ test('Will handle Initialized event', () => {
 
 // - Paused(address)
 test('Will handle Paused event', () => {
-  const instigator = Address.fromString('0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266');
-
   createPerformanceBondMediator();
 
   assert.fieldEquals('BondMediator', BOND_MEDIATOR_ADDRESS, 'paused', 'false');
@@ -545,8 +517,8 @@ test('Will handle Paused event', () => {
       defaultBigInt,
       defaultLogType,
       newBlock(),
-      newTransaction(instigator.toHex()),
-      [new ethereum.EventParam('account', ethereum.Value.fromAddress(instigator))],
+      newTransaction(INSTIGATOR.toHex()),
+      [new ethereum.EventParam('account', ethereum.Value.fromAddress(INSTIGATOR))],
       null
     )
   );
@@ -558,14 +530,9 @@ test('Will handle Paused event', () => {
 
 // - RemoveCollateralWhitelist(indexed uint256,indexed address,indexed address)
 test('Will handle RemoveCollateralWhitelist event', () => {
-  const instigator = Address.fromString('0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266');
-  const treasuryAddress = Address.fromString(
-    '0x7B4f352Cd40114f12e82fC675b5BA8C7582FC513'
-  );
-
   const dao = createPerformanceBondDAO();
 
-  const whitelistId = `${DAO_ID_HEX}-${treasuryAddress.toHex()}`;
+  const whitelistId = `${DAO_ID_HEX}-${TREASURY.toHex()}`;
   const whitelist = new DAOCollateralWhitelist(whitelistId);
 
   whitelist.dao = dao.id;
@@ -581,14 +548,14 @@ test('Will handle RemoveCollateralWhitelist event', () => {
       defaultBigInt,
       defaultLogType,
       newBlock(),
-      newTransaction(instigator.toHex()),
+      newTransaction(INSTIGATOR.toHex()),
       [
         new ethereum.EventParam('daoId', ethereum.Value.fromI32(DAO_ID)),
         new ethereum.EventParam(
           'collateralTokens',
-          ethereum.Value.fromAddress(treasuryAddress)
+          ethereum.Value.fromAddress(TREASURY)
         ),
-        new ethereum.EventParam('instigator', ethereum.Value.fromAddress(instigator))
+        new ethereum.EventParam('instigator', ethereum.Value.fromAddress(INSTIGATOR))
       ],
       null
     )
@@ -602,18 +569,16 @@ test('Will handle RemoveCollateralWhitelist event', () => {
 
 // - RevokeDaoRole(indexed uint256,indexed bytes32,address,indexed address)
 test('Will handle RevokeDaoRole event', () => {
-  const instigator = Address.fromString('0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266');
-  const account = Address.fromString('0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266');
   const role = Bytes.fromI32(1);
 
   const dao = createPerformanceBondDAO();
 
-  const roleId = `${DAO_ID_HEX}-${role.toHex()}-${account.toHex()}`;
+  const roleId = `${DAO_ID_HEX}-${role.toHex()}-${ACCOUNT.toHex()}`;
   const daoRole = new DAORole(roleId);
 
   daoRole.dao = dao.id;
   daoRole.role = role;
-  daoRole.account = account;
+  daoRole.account = ACCOUNT;
 
   daoRole.save();
 
@@ -626,12 +591,12 @@ test('Will handle RevokeDaoRole event', () => {
       defaultBigInt,
       defaultLogType,
       newBlock(),
-      newTransaction(instigator.toHex()),
+      newTransaction(INSTIGATOR.toHex()),
       [
         new ethereum.EventParam('daoId', ethereum.Value.fromI32(DAO_ID)),
         new ethereum.EventParam('role', ethereum.Value.fromBytes(role)),
-        new ethereum.EventParam('account', ethereum.Value.fromAddress(account)),
-        new ethereum.EventParam('instigator', ethereum.Value.fromAddress(instigator))
+        new ethereum.EventParam('account', ethereum.Value.fromAddress(ACCOUNT)),
+        new ethereum.EventParam('instigator', ethereum.Value.fromAddress(INSTIGATOR))
       ],
       null
     )
@@ -644,15 +609,13 @@ test('Will handle RevokeDaoRole event', () => {
 
 // - RevokeGlobalRole(indexed bytes32,address,indexed address)
 test('Will handle RevokeGlobalRole event', () => {
-  const instigator = Address.fromString('0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266');
-  const account = Address.fromString('0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266');
   const role = Bytes.fromI32(1);
 
-  const roleId = `${role.toHex()}-${account.toHex()}`;
+  const roleId = `${role.toHex()}-${ACCOUNT.toHex()}`;
   const roleEntity = new Role(roleId);
 
   roleEntity.role = role;
-  roleEntity.account = account;
+  roleEntity.account = ACCOUNT;
 
   roleEntity.save();
 
@@ -663,11 +626,11 @@ test('Will handle RevokeGlobalRole event', () => {
       defaultBigInt,
       defaultLogType,
       newBlock(),
-      newTransaction(instigator.toHex()),
+      newTransaction(INSTIGATOR.toHex()),
       [
         new ethereum.EventParam('indexedrole', ethereum.Value.fromBytes(role)),
-        new ethereum.EventParam('account', ethereum.Value.fromAddress(account)),
-        new ethereum.EventParam('instigator', ethereum.Value.fromAddress(instigator))
+        new ethereum.EventParam('account', ethereum.Value.fromAddress(ACCOUNT)),
+        new ethereum.EventParam('instigator', ethereum.Value.fromAddress(INSTIGATOR))
       ],
       null
     )
@@ -680,8 +643,6 @@ test('Will handle RevokeGlobalRole event', () => {
 
 // - Unpaused(address)
 test('Will handle Unpaused event', () => {
-  const instigator = Address.fromString('0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266');
-
   const bondMediator = createPerformanceBondMediator();
   bondMediator.paused = true;
 
@@ -696,8 +657,8 @@ test('Will handle Unpaused event', () => {
       defaultBigInt,
       defaultLogType,
       newBlock(),
-      newTransaction(instigator.toHex()),
-      [new ethereum.EventParam('account', ethereum.Value.fromAddress(instigator))],
+      newTransaction(INSTIGATOR.toHex()),
+      [new ethereum.EventParam('account', ethereum.Value.fromAddress(INSTIGATOR))],
       null
     )
   );
@@ -709,9 +670,6 @@ test('Will handle Unpaused event', () => {
 
 // - Upgraded(indexed address)
 test('Will handle Upgraded event', () => {
-  const instigator = Address.fromString('0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266');
-  const implementation = Address.fromString('0x70997970c51812dc3a010c7d01b50e0d17dc79c8');
-
   createPerformanceBondMediator();
 
   handleUpgraded(
@@ -721,11 +679,11 @@ test('Will handle Upgraded event', () => {
       defaultBigInt,
       defaultLogType,
       newBlock(),
-      newTransaction(instigator.toHex()),
+      newTransaction(INSTIGATOR.toHex()),
       [
         new ethereum.EventParam(
           'implementation',
-          ethereum.Value.fromAddress(implementation)
+          ethereum.Value.fromAddress(IMPLEMENTATION)
         )
       ],
       null
@@ -736,7 +694,7 @@ test('Will handle Upgraded event', () => {
     'BondMediator',
     BOND_MEDIATOR_ADDRESS,
     'implementation',
-    implementation.toHex()
+    IMPLEMENTATION.toHex()
   );
 
   clearStore();

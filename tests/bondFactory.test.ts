@@ -4,13 +4,21 @@ import { assert, clearStore, test } from 'matchstick-as/assembly/index';
 
 // - Helpers, consts and utils
 import {
+  BENEFICIARY,
+  BOND_ADDRESS,
   BOND_FACTORY_ADDRESS,
   createPerformanceBondFactory,
   defaultAddress,
   defaultBigInt,
   defaultLogType,
+  EMPTY_ADDRESS,
+  INSTIGATOR,
   newBlock,
-  newTransaction
+  newTransaction,
+  OWNER_NEW,
+  OWNER_OLD,
+  TOKEN,
+  TREASURY
 } from './utils';
 
 // - Event methods
@@ -35,13 +43,7 @@ import {
 
 // - CreatePerformanceBond(indexed address,(string,string,string),(uint256,address,uint256,uint256),(address,uint128,uint128)[],indexed address,indexed address)
 test('Will handle CreatePerformanceBond event', () => {
-  const bondAddress = Address.fromString('0xcafCfdF4517F504a473469F3723e674413EE9bce');
-  const treasuryAddress = Address.fromString(
-    '0x7B4f352Cd40114f12e82fC675b5BA8C7582FC513'
-  );
-  const instigatorAddress = Address.fromString(
-    '0x51C65cd0Cdb1A8A8b79dfc2eE965B1bA0bb8fc89'
-  );
+  const bondAddress = Address.fromString(BOND_ADDRESS);
 
   createPerformanceBondFactory();
 
@@ -53,7 +55,7 @@ test('Will handle CreatePerformanceBond event', () => {
 
   const configuration = changetype<ethereum.Tuple>([
     ethereum.Value.fromI32(101),
-    ethereum.Value.fromAddress(treasuryAddress),
+    ethereum.Value.fromAddress(TREASURY),
     ethereum.Value.fromI32(9999),
     ethereum.Value.fromI32(1)
   ]);
@@ -65,16 +67,16 @@ test('Will handle CreatePerformanceBond event', () => {
       defaultBigInt,
       defaultLogType,
       newBlock(),
-      newTransaction(instigatorAddress.toHex()),
+      newTransaction(INSTIGATOR.toHex()),
       [
         new ethereum.EventParam('bond', ethereum.Value.fromAddress(bondAddress)),
         new ethereum.EventParam('metadata', ethereum.Value.fromTuple(metadata)),
         new ethereum.EventParam('configuration', ethereum.Value.fromTuple(configuration)),
         new ethereum.EventParam('rewards', ethereum.Value.fromArray([])),
-        new ethereum.EventParam('treasury', ethereum.Value.fromAddress(treasuryAddress)),
+        new ethereum.EventParam('treasury', ethereum.Value.fromAddress(TREASURY)),
         new ethereum.EventParam(
           'instigator',
-          ethereum.Value.fromAddress(instigatorAddress)
+          ethereum.Value.fromAddress(INSTIGATOR)
         )
       ],
       null
@@ -88,11 +90,11 @@ test('Will handle CreatePerformanceBond event', () => {
     `[${bondAddress.toHex()}]`
   );
 
-  assert.fieldEquals('Bond', bondAddress.toHex(), 'treasury', treasuryAddress.toHex());
-  assert.fieldEquals('Bond', bondAddress.toHex(), 'owner', instigatorAddress.toHex());
+  assert.fieldEquals('Bond', bondAddress.toHex(), 'treasury', TREASURY.toHex());
+  assert.fieldEquals('Bond', bondAddress.toHex(), 'owner', INSTIGATOR.toHex());
   assert.fieldEquals('Bond', bondAddress.toHex(), 'isRedeemable', 'false');
   assert.fieldEquals('Bond', bondAddress.toHex(), 'redeemableReason', '');
-  assert.fieldEquals('Bond', bondAddress.toHex(), 'redeemableAuthorizer', '0x00000000');
+  assert.fieldEquals('Bond', bondAddress.toHex(), 'redeemableAuthorizer', EMPTY_ADDRESS);
   assert.fieldEquals('Bond', bondAddress.toHex(), 'redeemableTimestamp', '0');
   assert.fieldEquals('Bond', bondAddress.toHex(), 'redemptionExcess', '0');
   assert.fieldEquals('Bond', bondAddress.toHex(), 'collateralAmount', '0');
@@ -102,7 +104,7 @@ test('Will handle CreatePerformanceBond event', () => {
     'Bond',
     bondAddress.toHex(),
     'collateralTokens',
-    treasuryAddress.toHex()
+    TREASURY.toHex()
   );
   assert.fieldEquals('Bond', bondAddress.toHex(), 'collateralWithdrawn', 'false');
   assert.fieldEquals('Bond', bondAddress.toHex(), 'paused', 'false');
@@ -134,7 +136,7 @@ test('Will handle CreatePerformanceBond event', () => {
     'Bond__Configuration',
     bondAddress.toHex(),
     'collateralTokens',
-    treasuryAddress.toHex()
+    TREASURY.toHex()
   );
   assert.fieldEquals(
     'Bond__Configuration',
@@ -149,12 +151,6 @@ test('Will handle CreatePerformanceBond event', () => {
 
 // - BeneficiaryUpdate(indexed address,indexed address)
 test('Will handle BeneficiaryUpdate event', () => {
-  const instigatorAddress = Address.fromString(
-    '0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266'
-  );
-  const beneficiaryAddress = Address.fromString(
-    '0x70997970c51812dc3a010c7d01b50e0d17dc79c8'
-  );
 
   createPerformanceBondFactory();
 
@@ -165,15 +161,15 @@ test('Will handle BeneficiaryUpdate event', () => {
       defaultBigInt,
       defaultLogType,
       newBlock(),
-      newTransaction(instigatorAddress.toHex()),
+      newTransaction(INSTIGATOR.toHex()),
       [
         new ethereum.EventParam(
           'beneficiary',
-          ethereum.Value.fromAddress(beneficiaryAddress)
+          ethereum.Value.fromAddress(BENEFICIARY)
         ),
         new ethereum.EventParam(
           'instigator',
-          ethereum.Value.fromAddress(instigatorAddress)
+          ethereum.Value.fromAddress(INSTIGATOR)
         )
       ],
       null
@@ -184,7 +180,7 @@ test('Will handle BeneficiaryUpdate event', () => {
     'BondFactory',
     BOND_FACTORY_ADDRESS,
     'beneficiary',
-    beneficiaryAddress.toHex()
+    BENEFICIARY.toHex()
   );
 
   clearStore();
@@ -192,9 +188,6 @@ test('Will handle BeneficiaryUpdate event', () => {
 
 // - ERC20Sweep(indexed address,indexed address,uint256,indexed address)
 test('Will handle ERC20Sweep event', () => {
-  const instigator = Address.fromString('0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266');
-  const beneficiary = Address.fromString('0x70997970c51812dc3a010c7d01b50e0d17dc79c8');
-  const tokens = Address.fromString('0x8626f6940e2eb28930efb4cef49b2d1f2c9c1199');
   const amount = 100;
 
   const sweepId = `${defaultAddress.toHex()}-${defaultBigInt.toHex()}`;
@@ -208,12 +201,12 @@ test('Will handle ERC20Sweep event', () => {
       defaultBigInt,
       defaultLogType,
       newBlock(),
-      newTransaction(instigator.toHex()),
+      newTransaction(INSTIGATOR.toHex()),
       [
-        new ethereum.EventParam('beneficiary', ethereum.Value.fromAddress(beneficiary)),
-        new ethereum.EventParam('tokens', ethereum.Value.fromAddress(tokens)),
+        new ethereum.EventParam('beneficiary', ethereum.Value.fromAddress(BENEFICIARY)),
+        new ethereum.EventParam('tokens', ethereum.Value.fromAddress(TOKEN)),
         new ethereum.EventParam('amount', ethereum.Value.fromI32(amount)),
-        new ethereum.EventParam('instigator', ethereum.Value.fromAddress(instigator))
+        new ethereum.EventParam('instigator', ethereum.Value.fromAddress(INSTIGATOR))
       ],
       null
     )
@@ -222,12 +215,12 @@ test('Will handle ERC20Sweep event', () => {
   assert.fieldEquals('BondFactory', BOND_FACTORY_ADDRESS, 'sweeps', `[${sweepId}]`);
 
   assert.fieldEquals('BondFactory__Sweep', sweepId, 'amount', `${amount}`);
-  assert.fieldEquals('BondFactory__Sweep', sweepId, 'token', `${tokens.toHex()}`);
+  assert.fieldEquals('BondFactory__Sweep', sweepId, 'token', `${TOKEN.toHex()}`);
   assert.fieldEquals(
     'BondFactory__Sweep',
     sweepId,
     'beneficiary',
-    `${beneficiary.toHex()}`
+    `${BENEFICIARY.toHex()}`
   );
 
   clearStore();
@@ -235,9 +228,6 @@ test('Will handle ERC20Sweep event', () => {
 
 // - OwnershipTransferred(indexed address,indexed address)
 test('Will handle OwnershipTransferred event', () => {
-  const newOwner = Address.fromString('0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266');
-  const previousOwner = Address.fromString('0x70997970c51812dc3a010c7d01b50e0d17dc79c8');
-
   createPerformanceBondFactory();
 
   handleOwnershipTransferred(
@@ -251,15 +241,15 @@ test('Will handle OwnershipTransferred event', () => {
       [
         new ethereum.EventParam(
           'previousOwner',
-          ethereum.Value.fromAddress(previousOwner)
+          ethereum.Value.fromAddress(OWNER_OLD)
         ),
-        new ethereum.EventParam('newOwner', ethereum.Value.fromAddress(newOwner))
+        new ethereum.EventParam('newOwner', ethereum.Value.fromAddress(OWNER_NEW))
       ],
       null
     )
   );
 
-  assert.fieldEquals('BondFactory', BOND_FACTORY_ADDRESS, 'owner', newOwner.toHex());
+  assert.fieldEquals('BondFactory', BOND_FACTORY_ADDRESS, 'owner', OWNER_NEW.toHex());
 
   clearStore();
 });
