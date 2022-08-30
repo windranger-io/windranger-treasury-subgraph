@@ -263,7 +263,7 @@ export function handleWithdrawStake(event: WithdrawStake): void {
   withdrawal.pool = stakingPool.id;
   withdrawal.user = event.params.user;
 
-  const withdrawn: BigInt = withdrawal.amount || BigInt.fromI32(0);
+  const withdrawn: BigInt = withdrawal.amount as BigInt || BigInt.fromI32(0);
   withdrawal.amount = withdrawn.plus(event.params.stake);
 
   withdrawal.createdAtTimestamp = withdrawal.createdAtTimestamp || event.block.timestamp;

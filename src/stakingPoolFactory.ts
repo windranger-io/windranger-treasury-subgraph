@@ -87,15 +87,19 @@ export function handleStakingPoolCreated(event: StakingPoolCreated): void {
       ? new StakingPool(event.params.stakingPool.toHex())
       : stakingPool;
 
+      
+      
   stakingPool.pool = event.params.stakingPool;
-  stakingPool.stakeToken = event.params.stakeToken;
+  stakingPool.stakeToken = event.params.config.stakeToken;
   stakingPool.creator = event.params.creator;
-  stakingPool.treasury = event.params.treasury;
-
-  stakingPool.epochStartTimestamp = event.params.epochStartTimestamp;
-  stakingPool.epochDuration = event.params.epochDuration;
-  stakingPool.minimumContribution = event.params.minimumContribution;
-  stakingPool.rewardType = event.params.rewardType;
+  stakingPool.treasury = event.params.config.treasury;
+  
+  stakingPool.epochStartTimestamp = event.params.config.epochStartTimestamp;
+  stakingPool.epochDuration = event.params.config.epochDuration;
+  stakingPool.minTotalPoolStake = event.params.config.minTotalPoolStake;
+  stakingPool.maxTotalPoolStake = event.params.config.maxTotalPoolStake;
+  stakingPool.minimumContribution = event.params.config.minimumContribution;
+  stakingPool.rewardType = event.params.config.rewardType;
   stakingPool.factory = stakingPoolFactory.id;
 
   stakingPool.createdAtTimestamp =
@@ -104,8 +108,8 @@ export function handleStakingPoolCreated(event: StakingPoolCreated): void {
 
   stakingPool.save();
 
-  for (let i = 0; i < event.params.rewardTokens.length; i++) {
-    const reward = event.params.rewardTokens[i];
+  for (let i = 0; i < event.params.config.rewardTokens.length; i++) {
+    const reward = event.params.config.rewardTokens[i];
     const rewardId = `${event.params.stakingPool.toHex()}-${reward.tokens.toHex()}`;
 
     let poolReward = StakingPoolReward.load(rewardId);

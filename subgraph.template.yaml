@@ -1,4 +1,4 @@
-specVersion: 0.0.3
+specVersion: 0.0.4
 schema:
   file: ./schema.graphql
 dataSources:
@@ -193,7 +193,7 @@ dataSources:
           handler: handleOwnershipTransferred
         - event: Paused(address)
           handler: handlePaused
-        - event: StakingPoolCreated(indexed address,address,indexed address,(address,uint256,uint256)[],address,uint128,uint128,uint128,uint8)
+        - event: StakingPoolCreated(indexed address,(uint256,uint128,uint128,uint128,uint32,uint32,address,address,(address,uint256,uint256)[],uint8),indexed address)
           handler: handleStakingPoolCreated
         - event: Unpaused(address)
           handler: handleUnpaused
@@ -324,7 +324,7 @@ templates:
           handler: handleOwnershipTransferred
         - event: Paused(address)
           handler: handlePaused
-        - event: StakingPoolCreated(indexed address,address,indexed address,(address,uint256,uint256)[],address,uint128,uint128,uint128,uint8)
+        - event: StakingPoolCreated(indexed address,(uint256,uint128,uint128,uint128,uint32,uint32,address,address,(address,uint256,uint256)[],uint8),indexed address)
           handler: handleStakingPoolCreated
         - event: Unpaused(address)
           handler: handleUnpaused

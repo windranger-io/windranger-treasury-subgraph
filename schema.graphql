@@ -430,6 +430,8 @@ type StakingPool @entity {
 
   stakeToken: Bytes!
   amount: BigInt!
+  minTotalPoolStake: BigInt!
+  maxTotalPoolStake: BigInt!
   minimumContribution: BigInt!
 
   epochStartTimestamp: BigInt!

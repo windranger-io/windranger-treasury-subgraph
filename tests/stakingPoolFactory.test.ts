@@ -10,7 +10,8 @@ import {
   newTransaction,
   createStakingPoolFactory,
   STAKINGPOOL_FACTORY_ADDRESS,
-  defaultAddress
+  defaultAddress,
+  DAO_ID
 } from './utils';
 
 // - Event methods
@@ -223,25 +224,19 @@ test('Will handle StakingPoolCreated event', () => {
       newTransaction(instigator.toHex()),
       [
         new ethereum.EventParam('stakingPool', ethereum.Value.fromAddress(stakingPool)),
-        new ethereum.EventParam('treasury', ethereum.Value.fromAddress(treasury)),
-        new ethereum.EventParam('creator', ethereum.Value.fromAddress(creator)),
-        new ethereum.EventParam(
-          'rewardTokens',
-          ethereum.Value.fromArray([ethereum.Value.fromTuple(reward)])
-        ),
-        new ethereum.EventParam('stakeToken', ethereum.Value.fromAddress(stakeToken)),
-
-        new ethereum.EventParam(
-          'epochStartTimestamp',
-          ethereum.Value.fromI32(epochStartTimestamp)
-        ),
-        new ethereum.EventParam('epochDuration', ethereum.Value.fromI32(epochDuration)),
-        new ethereum.EventParam(
-          'minimumContribution',
-          ethereum.Value.fromI32(minimumContribution)
-        ),
-
-        new ethereum.EventParam('rewardType', ethereum.Value.fromI32(rewardType))
+        new ethereum.EventParam('config', ethereum.Value.fromTuple(changetype<ethereum.Tuple>([
+          ethereum.Value.fromI32(DAO_ID),
+          ethereum.Value.fromI32(0),
+          ethereum.Value.fromI32(0),
+          ethereum.Value.fromI32(minimumContribution),
+          ethereum.Value.fromI32(epochDuration),
+          ethereum.Value.fromI32(epochStartTimestamp),
+          ethereum.Value.fromAddress(treasury),
+          ethereum.Value.fromAddress(stakeToken),
+          ethereum.Value.fromArray([ethereum.Value.fromTuple(reward)]),
+          ethereum.Value.fromI32(rewardType)
+        ]))),
+        new ethereum.EventParam('creator', ethereum.Value.fromAddress(creator))
       ],
       null
     )
