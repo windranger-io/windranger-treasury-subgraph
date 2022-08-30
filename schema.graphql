@@ -92,7 +92,7 @@ type Bond @entity {
   paused: Boolean!
   expired: Boolean!
 
-  metadata: Bond__Metadata @derivedFrom(field: "bond")
+  metadata: Bond__Metadata! @derivedFrom(field: "bond")
   configuration: Bond__Configuration! @derivedFrom(field: "bond")
 
   rewards: [Bond__RewardPool!]! @derivedFrom(field: "bond")
@@ -144,7 +144,7 @@ type Bond__DAO @entity {
   treasury: Bytes!
   owner: Bytes!
 
-  metadata: Bond__DAO__Metadata @derivedFrom(field: "dao")
+  metadata: Bond__DAO__Metadata! @derivedFrom(field: "dao")
 
   bonds: [Bond!]! @derivedFrom(field: "dao")
   roles: [Bond__DAO__Role!]! @derivedFrom(field: "dao")
@@ -459,7 +459,7 @@ type StakingPool__DAO @entity {
   treasury: Bytes!
   owner: Bytes!
 
-  metadata: StakingPool__DAO__Metadata @derivedFrom(field: "dao")
+  metadata: StakingPool__DAO__Metadata! @derivedFrom(field: "dao")
 
   roles: [StakingPool__DAO__Role!]! @derivedFrom(field: "dao")
 

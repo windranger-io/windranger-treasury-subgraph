@@ -263,6 +263,7 @@ export function handleWithdrawStake(event: WithdrawStake): void {
   withdrawal.pool = stakingPool.id;
   withdrawal.user = event.params.user;
 
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
   const withdrawn: BigInt = withdrawal.amount as BigInt || BigInt.fromI32(0);
   withdrawal.amount = withdrawn.plus(event.params.stake);
 
