@@ -106,7 +106,7 @@ test('Will handle AllowRedemption event', () => {
 });
 
 // - ClaimReward(indexed address,uint256,indexed address)
-test('Will handle ClaimReward event', () => {  
+test('Will handle ClaimReward event', () => {
   const amount = 100;
 
   createPerformanceBond();
@@ -313,7 +313,6 @@ test('Will handle MetaDataUpdate event', () => {
 
 // - OwnershipTransferred(indexed address,indexed address)
 test('Will handle OwnershipTransferred event', () => {
-
   createPerformanceBond();
 
   handleOwnershipTransferred(
@@ -325,10 +324,7 @@ test('Will handle OwnershipTransferred event', () => {
       newBlock(),
       newTransaction(OWNER_OLD.toHex()),
       [
-        new ethereum.EventParam(
-          'OWNER_OLD',
-          ethereum.Value.fromAddress(OWNER_OLD)
-        ),
+        new ethereum.EventParam('OWNER_OLD', ethereum.Value.fromAddress(OWNER_OLD)),
         new ethereum.EventParam('newOwner', ethereum.Value.fromAddress(OWNER_NEW))
       ],
       null
@@ -374,7 +370,6 @@ test('Will handle PartialCollateral event', () => {
 
 // - Paused(address)
 test('Will handle Paused event', () => {
-
   createPerformanceBond();
 
   assert.fieldEquals('Bond', BOND_ADDRESS, 'paused', 'false');
@@ -471,12 +466,7 @@ test('Will handle Redemption event', () => {
     'collateralAmount',
     amount.toString()
   );
-  assert.fieldEquals(
-    'Bond__Redemption',
-    redemptionId,
-    'collateralTokens',
-    TOKEN.toHex()
-  );
+  assert.fieldEquals('Bond__Redemption', redemptionId, 'collateralTokens', TOKEN.toHex());
   assert.fieldEquals('Bond__Redemption', redemptionId, 'debtAmount', debt.toString());
   assert.fieldEquals('Bond__Redemption', redemptionId, 'debtTokens', TOKEN.toHex());
 
@@ -707,7 +697,6 @@ test('Will handle Transfer event', () => {
 
 // - Unpaused(address)
 test('Will handle Unpaused event', () => {
-
   const bond = createPerformanceBond();
   bond.paused = true;
 
@@ -734,9 +723,7 @@ test('Will handle Unpaused event', () => {
 });
 
 // - WithdrawCollateral(indexed address,indexed address,uint256,indexed address)
-const withdrawCollateral = (
-  amount: i32,
-): void => {
+const withdrawCollateral = (amount: i32): void => {
   handleWithdrawCollateral(
     new WithdrawCollateral(
       Address.fromString(BOND_ADDRESS),

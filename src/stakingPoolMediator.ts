@@ -1,4 +1,4 @@
-import { store } from '@graphprotocol/graph-ts';
+import { BigInt, store } from '@graphprotocol/graph-ts';
 
 import {
   StakingPool,
@@ -63,7 +63,9 @@ export function handleAddCollateralWhitelist(event: AddCollateralWhitelist): voi
   whitelist.token = event.params.collateralTokens;
   whitelist.mediator = stakingPoolMediator.id;
 
-  whitelist.createdAtTimestamp = whitelist.createdAtTimestamp || event.block.timestamp;
+  whitelist.createdAtTimestamp = whitelist.createdAtTimestamp.gt(BigInt.fromI32(0))
+    ? whitelist.createdAtTimestamp
+    : event.block.timestamp;
   whitelist.lastUpdatedTimestamp = event.block.timestamp;
 
   whitelist.save();
@@ -89,8 +91,9 @@ export function handleAddStakingPool(event: AddStakingPool): void {
   stakingPool.dao = dao.id;
   stakingPool.mediator = stakingPoolMediator.id;
 
-  stakingPool.createdAtTimestamp =
-    stakingPool.createdAtTimestamp || event.block.timestamp;
+  stakingPool.createdAtTimestamp = stakingPool.createdAtTimestamp.gt(BigInt.fromI32(0))
+    ? stakingPool.createdAtTimestamp
+    : event.block.timestamp;
   stakingPool.lastUpdatedTimestamp = event.block.timestamp;
 
   stakingPool.save();
@@ -106,8 +109,11 @@ export function handleAdminChanged(event: AdminChanged): void {
 
   stakingPoolMediator.admin = event.params.newAdmin;
 
-  stakingPoolMediator.createdAtTimestamp =
-    stakingPoolMediator.createdAtTimestamp || event.block.timestamp;
+  stakingPoolMediator.createdAtTimestamp = stakingPoolMediator.createdAtTimestamp.gt(
+    BigInt.fromI32(0)
+  )
+    ? stakingPoolMediator.createdAtTimestamp
+    : event.block.timestamp;
   stakingPoolMediator.lastUpdatedTimestamp = event.block.timestamp;
 
   stakingPoolMediator.save();
@@ -123,8 +129,11 @@ export function handleBeaconUpgraded(event: BeaconUpgraded): void {
 
   stakingPoolMediator.beacon = event.params.beacon;
 
-  stakingPoolMediator.createdAtTimestamp =
-    stakingPoolMediator.createdAtTimestamp || event.block.timestamp;
+  stakingPoolMediator.createdAtTimestamp = stakingPoolMediator.createdAtTimestamp.gt(
+    BigInt.fromI32(0)
+  )
+    ? stakingPoolMediator.createdAtTimestamp
+    : event.block.timestamp;
   stakingPoolMediator.lastUpdatedTimestamp = event.block.timestamp;
 
   stakingPoolMediator.save();
@@ -140,8 +149,11 @@ export function handleBeneficiaryUpdate(event: BeneficiaryUpdate): void {
 
   stakingPoolMediator.beneficiary = event.params.beneficiary;
 
-  stakingPoolMediator.createdAtTimestamp =
-    stakingPoolMediator.createdAtTimestamp || event.block.timestamp;
+  stakingPoolMediator.createdAtTimestamp = stakingPoolMediator.createdAtTimestamp.gt(
+    BigInt.fromI32(0)
+  )
+    ? stakingPoolMediator.createdAtTimestamp
+    : event.block.timestamp;
   stakingPoolMediator.lastUpdatedTimestamp = event.block.timestamp;
 
   stakingPoolMediator.save();
@@ -163,7 +175,9 @@ export function handleCreateDao(event: CreateDao): void {
   dao.treasury = event.params.treasury;
   dao.owner = event.params.instigator;
 
-  dao.createdAtTimestamp = dao.createdAtTimestamp || event.block.timestamp;
+  dao.createdAtTimestamp = dao.createdAtTimestamp.gt(BigInt.fromI32(0))
+    ? dao.createdAtTimestamp
+    : event.block.timestamp;
   dao.lastUpdatedTimestamp = event.block.timestamp;
 
   dao.save();
@@ -191,7 +205,9 @@ export function handleDaoMetaDataUpdate(event: DaoMetaDataUpdate): void {
   metadata.dao = dao.id;
   metadata.mediator = stakingPoolMediator.id;
 
-  metadata.createdAtTimestamp = metadata.createdAtTimestamp || event.block.timestamp;
+  metadata.createdAtTimestamp = metadata.createdAtTimestamp.gt(BigInt.fromI32(0))
+    ? metadata.createdAtTimestamp
+    : event.block.timestamp;
   metadata.lastUpdatedTimestamp = event.block.timestamp;
 
   metadata.save();
@@ -204,7 +220,9 @@ export function handleDaoTreasuryUpdate(event: DaoTreasuryUpdate): void {
 
   dao.treasury = event.params.treasury;
 
-  dao.createdAtTimestamp = dao.createdAtTimestamp || event.block.timestamp;
+  dao.createdAtTimestamp = dao.createdAtTimestamp.gt(BigInt.fromI32(0))
+    ? dao.createdAtTimestamp
+    : event.block.timestamp;
   dao.lastUpdatedTimestamp = event.block.timestamp;
 
   dao.save();
@@ -255,7 +273,9 @@ export function handleGrantDaoRole(event: GrantDaoRole): void {
   role.role = event.params.role;
   role.account = event.params.account;
 
-  role.createdAtTimestamp = role.createdAtTimestamp || event.block.timestamp;
+  role.createdAtTimestamp = role.createdAtTimestamp.gt(BigInt.fromI32(0))
+    ? role.createdAtTimestamp
+    : event.block.timestamp;
   role.lastUpdatedTimestamp = event.block.timestamp;
 
   role.save();
@@ -278,7 +298,9 @@ export function handleGrantGlobalRole(event: GrantGlobalRole): void {
   role.role = event.params.indexedrole;
   role.account = event.params.account;
 
-  role.createdAtTimestamp = role.createdAtTimestamp || event.block.timestamp;
+  role.createdAtTimestamp = role.createdAtTimestamp.gt(BigInt.fromI32(0))
+    ? role.createdAtTimestamp
+    : event.block.timestamp;
   role.lastUpdatedTimestamp = event.block.timestamp;
 
   role.save();
@@ -303,17 +325,23 @@ export function handleInitialized(event: Initialized): void {
 
   stakingPoolMediator.factory = stakingPoolFactory.id;
 
-  stakingPoolMediator.createdAtTimestamp =
-    stakingPoolMediator.createdAtTimestamp || event.block.timestamp;
+  stakingPoolMediator.createdAtTimestamp = stakingPoolMediator.createdAtTimestamp.gt(
+    BigInt.fromI32(0)
+  )
+    ? stakingPoolMediator.createdAtTimestamp
+    : event.block.timestamp;
   stakingPoolMediator.lastUpdatedTimestamp = event.block.timestamp;
 
   stakingPoolMediator.save();
 
   stakingPoolFactory.mediator = stakingPoolMediator.id;
   stakingPoolFactory.factory = factory;
-  
-  stakingPoolFactory.createdAtTimestamp = 
-    stakingPoolFactory.createdAtTimestamp || event.block.timestamp;
+
+  stakingPoolFactory.createdAtTimestamp = stakingPoolFactory.createdAtTimestamp.gt(
+    BigInt.fromI32(0)
+  )
+    ? stakingPoolFactory.createdAtTimestamp
+    : event.block.timestamp;
   stakingPoolFactory.lastUpdatedTimestamp = event.block.timestamp;
 
   stakingPoolFactory.save();
@@ -332,8 +360,11 @@ export function handlePaused(event: Paused): void {
 
   stakingPoolMediator.paused = true;
 
-  stakingPoolMediator.createdAtTimestamp =
-    stakingPoolMediator.createdAtTimestamp || event.block.timestamp;
+  stakingPoolMediator.createdAtTimestamp = stakingPoolMediator.createdAtTimestamp.gt(
+    BigInt.fromI32(0)
+  )
+    ? stakingPoolMediator.createdAtTimestamp
+    : event.block.timestamp;
   stakingPoolMediator.lastUpdatedTimestamp = event.block.timestamp;
 
   stakingPoolMediator.save();
@@ -392,8 +423,11 @@ export function handleStakingPoolCreatorUpdate(event: StakingPoolCreatorUpdate):
 
   stakingPoolMediator.factory = stakingPoolFactory.id;
 
-  stakingPoolMediator.createdAtTimestamp =
-    stakingPoolMediator.createdAtTimestamp || event.block.timestamp;
+  stakingPoolMediator.createdAtTimestamp = stakingPoolMediator.createdAtTimestamp.gt(
+    BigInt.fromI32(0)
+  )
+    ? stakingPoolMediator.createdAtTimestamp
+    : event.block.timestamp;
   stakingPoolMediator.lastUpdatedTimestamp = event.block.timestamp;
 
   stakingPoolMediator.save();
@@ -434,8 +468,11 @@ export function handleUpgraded(event: Upgraded): void {
 
   stakingPoolMediator.implementation = event.params.implementation;
 
-  stakingPoolMediator.createdAtTimestamp =
-    stakingPoolMediator.createdAtTimestamp || event.block.timestamp;
+  stakingPoolMediator.createdAtTimestamp = stakingPoolMediator.createdAtTimestamp.gt(
+    BigInt.fromI32(0)
+  )
+    ? stakingPoolMediator.createdAtTimestamp
+    : event.block.timestamp;
   stakingPoolMediator.lastUpdatedTimestamp = event.block.timestamp;
 
   stakingPoolMediator.save();

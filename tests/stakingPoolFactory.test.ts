@@ -224,18 +224,23 @@ test('Will handle StakingPoolCreated event', () => {
       newTransaction(instigator.toHex()),
       [
         new ethereum.EventParam('stakingPool', ethereum.Value.fromAddress(stakingPool)),
-        new ethereum.EventParam('config', ethereum.Value.fromTuple(changetype<ethereum.Tuple>([
-          ethereum.Value.fromI32(DAO_ID),
-          ethereum.Value.fromI32(0),
-          ethereum.Value.fromI32(0),
-          ethereum.Value.fromI32(minimumContribution),
-          ethereum.Value.fromI32(epochDuration),
-          ethereum.Value.fromI32(epochStartTimestamp),
-          ethereum.Value.fromAddress(treasury),
-          ethereum.Value.fromAddress(stakeToken),
-          ethereum.Value.fromArray([ethereum.Value.fromTuple(reward)]),
-          ethereum.Value.fromI32(rewardType)
-        ]))),
+        new ethereum.EventParam(
+          'config',
+          ethereum.Value.fromTuple(
+            changetype<ethereum.Tuple>([
+              ethereum.Value.fromI32(DAO_ID),
+              ethereum.Value.fromI32(0),
+              ethereum.Value.fromI32(0),
+              ethereum.Value.fromI32(minimumContribution),
+              ethereum.Value.fromI32(epochDuration),
+              ethereum.Value.fromI32(epochStartTimestamp),
+              ethereum.Value.fromAddress(treasury),
+              ethereum.Value.fromAddress(stakeToken),
+              ethereum.Value.fromArray([ethereum.Value.fromTuple(reward)]),
+              ethereum.Value.fromI32(rewardType)
+            ])
+          )
+        ),
         new ethereum.EventParam('creator', ethereum.Value.fromAddress(creator))
       ],
       null

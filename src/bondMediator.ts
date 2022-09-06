@@ -1,4 +1,4 @@
-import { store } from '@graphprotocol/graph-ts';
+import { BigInt, store } from '@graphprotocol/graph-ts';
 
 import {
   Bond,
@@ -55,7 +55,9 @@ export function handleAddPerformanceBond(event: AddPerformanceBond): void {
   bond.dao = dao.id;
   bond.mediator = bondMediator.id;
 
-  bond.createdAtTimestamp = bond.createdAtTimestamp || event.block.timestamp;
+  bond.createdAtTimestamp = bond.createdAtTimestamp.gt(BigInt.fromI32(0))
+    ? bond.createdAtTimestamp
+    : event.block.timestamp;
   bond.lastUpdatedTimestamp = event.block.timestamp;
 
   bond.save();
@@ -83,7 +85,9 @@ export function handleAddCollateralWhitelist(event: AddCollateralWhitelist): voi
   whitelist.token = event.params.collateralTokens;
   whitelist.mediator = bondMediator.id;
 
-  whitelist.createdAtTimestamp = whitelist.createdAtTimestamp || event.block.timestamp;
+  whitelist.createdAtTimestamp = whitelist.createdAtTimestamp.gt(BigInt.fromI32(0))
+    ? whitelist.createdAtTimestamp
+    : event.block.timestamp;
   whitelist.lastUpdatedTimestamp = event.block.timestamp;
 
   whitelist.save();
@@ -97,8 +101,9 @@ export function handleAdminChanged(event: AdminChanged): void {
 
   bondMediator.admin = event.params.newAdmin;
 
-  bondMediator.createdAtTimestamp =
-    bondMediator.createdAtTimestamp || event.block.timestamp;
+  bondMediator.createdAtTimestamp = bondMediator.createdAtTimestamp.gt(BigInt.fromI32(0))
+    ? bondMediator.createdAtTimestamp
+    : event.block.timestamp;
   bondMediator.lastUpdatedTimestamp = event.block.timestamp;
 
   bondMediator.save();
@@ -112,8 +117,9 @@ export function handleBeaconUpgraded(event: BeaconUpgraded): void {
 
   bondMediator.beacon = event.params.beacon;
 
-  bondMediator.createdAtTimestamp =
-    bondMediator.createdAtTimestamp || event.block.timestamp;
+  bondMediator.createdAtTimestamp = bondMediator.createdAtTimestamp.gt(BigInt.fromI32(0))
+    ? bondMediator.createdAtTimestamp
+    : event.block.timestamp;
   bondMediator.lastUpdatedTimestamp = event.block.timestamp;
 
   bondMediator.save();
@@ -127,15 +133,18 @@ export function handleBeneficiaryUpdate(event: BeneficiaryUpdate): void {
 
   bondMediator.beneficiary = event.params.beneficiary;
 
-  bondMediator.createdAtTimestamp =
-    bondMediator.createdAtTimestamp || event.block.timestamp;
+  bondMediator.createdAtTimestamp = bondMediator.createdAtTimestamp.gt(BigInt.fromI32(0))
+    ? bondMediator.createdAtTimestamp
+    : event.block.timestamp;
   bondMediator.lastUpdatedTimestamp = event.block.timestamp;
 
   bondMediator.save();
 }
 
 // - PerformanceBondCreatorUpdate(indexed address,indexed address,indexed address)
-export function handlePerformanceBondCreatorUpdate(event: PerformanceBondCreatorUpdate): void {
+export function handlePerformanceBondCreatorUpdate(
+  event: PerformanceBondCreatorUpdate
+): void {
   let bondMediator = BondMediator.load(event.address.toHex());
   bondMediator =
     bondMediator === null ? new BondMediator(event.address.toHex()) : bondMediator;
@@ -148,8 +157,9 @@ export function handlePerformanceBondCreatorUpdate(event: PerformanceBondCreator
 
   bondMediator.factory = bondFactory.id;
 
-  bondMediator.createdAtTimestamp =
-    bondMediator.createdAtTimestamp || event.block.timestamp;
+  bondMediator.createdAtTimestamp = bondMediator.createdAtTimestamp.gt(BigInt.fromI32(0))
+    ? bondMediator.createdAtTimestamp
+    : event.block.timestamp;
   bondMediator.lastUpdatedTimestamp = event.block.timestamp;
 
   bondMediator.save();
@@ -179,7 +189,9 @@ export function handleCreateDao(event: CreateDao): void {
   dao.treasury = event.params.treasury;
   dao.owner = event.params.instigator;
 
-  dao.createdAtTimestamp = dao.createdAtTimestamp || event.block.timestamp;
+  dao.createdAtTimestamp = dao.createdAtTimestamp.gt(BigInt.fromI32(0))
+    ? dao.createdAtTimestamp
+    : event.block.timestamp;
   dao.lastUpdatedTimestamp = event.block.timestamp;
 
   dao.save();
@@ -205,7 +217,9 @@ export function handleDaoMetaDataUpdate(event: DaoMetaDataUpdate): void {
   metadata.dao = dao.id;
   metadata.mediator = bondMediator.id;
 
-  metadata.createdAtTimestamp = metadata.createdAtTimestamp || event.block.timestamp;
+  metadata.createdAtTimestamp = metadata.createdAtTimestamp.gt(BigInt.fromI32(0))
+    ? metadata.createdAtTimestamp
+    : event.block.timestamp;
   metadata.lastUpdatedTimestamp = event.block.timestamp;
 
   metadata.save();
@@ -218,7 +232,9 @@ export function handleDaoTreasuryUpdate(event: DaoTreasuryUpdate): void {
 
   dao.treasury = event.params.treasury;
 
-  dao.createdAtTimestamp = dao.createdAtTimestamp || event.block.timestamp;
+  dao.createdAtTimestamp = dao.createdAtTimestamp.gt(BigInt.fromI32(0))
+    ? dao.createdAtTimestamp
+    : event.block.timestamp;
   dao.lastUpdatedTimestamp = event.block.timestamp;
 
   dao.save();
@@ -265,7 +281,9 @@ export function handleGrantDaoRole(event: GrantDaoRole): void {
   role.role = event.params.role;
   role.account = event.params.account;
 
-  role.createdAtTimestamp = role.createdAtTimestamp || event.block.timestamp;
+  role.createdAtTimestamp = role.createdAtTimestamp.gt(BigInt.fromI32(0))
+    ? role.createdAtTimestamp
+    : event.block.timestamp;
   role.lastUpdatedTimestamp = event.block.timestamp;
 
   role.save();
@@ -286,7 +304,9 @@ export function handleGrantGlobalRole(event: GrantGlobalRole): void {
   role.role = event.params.indexedrole;
   role.account = event.params.account;
 
-  role.createdAtTimestamp = role.createdAtTimestamp || event.block.timestamp;
+  role.createdAtTimestamp = role.createdAtTimestamp.gt(BigInt.fromI32(0))
+    ? role.createdAtTimestamp
+    : event.block.timestamp;
   role.lastUpdatedTimestamp = event.block.timestamp;
 
   role.save();
@@ -296,30 +316,29 @@ export function handleGrantGlobalRole(event: GrantGlobalRole): void {
 export function handleInitialized(event: Initialized): void {
   const mediator = PerformanceBondMediatorContract.bind(event.address);
   const factory = mediator.bondCreator();
-  
+
   let bondMediator = BondMediator.load(event.address.toHex());
   bondMediator =
     bondMediator === null ? new BondMediator(event.address.toHex()) : bondMediator;
 
   let bondFactory = BondFactory.load(factory.toHex());
-  bondFactory =
-    bondFactory === null
-      ? new BondFactory(factory.toHex())
-      : bondFactory;
-  
+  bondFactory = bondFactory === null ? new BondFactory(factory.toHex()) : bondFactory;
+
   bondMediator.factory = bondFactory.id;
 
-  bondMediator.createdAtTimestamp =
-    bondMediator.createdAtTimestamp || event.block.timestamp;
+  bondMediator.createdAtTimestamp = bondMediator.createdAtTimestamp.gt(BigInt.fromI32(0))
+    ? bondMediator.createdAtTimestamp
+    : event.block.timestamp;
   bondMediator.lastUpdatedTimestamp = event.block.timestamp;
 
   bondMediator.save();
 
   bondFactory.mediator = bondMediator.id;
   bondFactory.factory = factory;
-  
-  bondFactory.createdAtTimestamp = 
-    bondFactory.createdAtTimestamp || event.block.timestamp;
+
+  bondFactory.createdAtTimestamp = bondFactory.createdAtTimestamp.gt(BigInt.fromI32(0))
+    ? bondFactory.createdAtTimestamp
+    : event.block.timestamp;
   bondFactory.lastUpdatedTimestamp = event.block.timestamp;
 
   bondFactory.save();
@@ -336,8 +355,9 @@ export function handlePaused(event: Paused): void {
 
   bondMediator.paused = true;
 
-  bondMediator.createdAtTimestamp =
-    bondMediator.createdAtTimestamp || event.block.timestamp;
+  bondMediator.createdAtTimestamp = bondMediator.createdAtTimestamp.gt(BigInt.fromI32(0))
+    ? bondMediator.createdAtTimestamp
+    : event.block.timestamp;
   bondMediator.lastUpdatedTimestamp = event.block.timestamp;
 
   bondMediator.save();
@@ -388,8 +408,9 @@ export function handleUnpaused(event: Unpaused): void {
 
   bondMediator.paused = false;
 
-  bondMediator.createdAtTimestamp =
-    bondMediator.createdAtTimestamp || event.block.timestamp;
+  bondMediator.createdAtTimestamp = bondMediator.createdAtTimestamp.gt(BigInt.fromI32(0))
+    ? bondMediator.createdAtTimestamp
+    : event.block.timestamp;
   bondMediator.lastUpdatedTimestamp = event.block.timestamp;
 
   bondMediator.save();
@@ -403,8 +424,9 @@ export function handleUpgraded(event: Upgraded): void {
 
   bondMediator.implementation = event.params.implementation;
 
-  bondMediator.createdAtTimestamp =
-    bondMediator.createdAtTimestamp || event.block.timestamp;
+  bondMediator.createdAtTimestamp = bondMediator.createdAtTimestamp.gt(BigInt.fromI32(0))
+    ? bondMediator.createdAtTimestamp
+    : event.block.timestamp;
   bondMediator.lastUpdatedTimestamp = event.block.timestamp;
 
   bondMediator.save();

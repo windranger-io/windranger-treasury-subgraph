@@ -1,6 +1,11 @@
 // - Testing tools
 import { Address, Bytes, ethereum } from '@graphprotocol/graph-ts';
-import { assert, clearStore, createMockedFunction, test } from 'matchstick-as/assembly/index';
+import {
+  assert,
+  clearStore,
+  createMockedFunction,
+  test
+} from 'matchstick-as/assembly/index';
 
 // - Helpers, consts and utils
 import {
@@ -559,9 +564,12 @@ test('Will handle Initialized event', () => {
   const factory = Address.fromString('0x70997970c51812dc3a010c7d01b50e0d17dc79c8');
 
   const contractAddress = Address.fromString(STAKINGPOOL_MEDIATOR_ADDRESS);
-  createMockedFunction(contractAddress, "stakingPoolCreator", "stakingPoolCreator():(address)")
-    .returns([ethereum.Value.fromAddress(factory)]);
-        
+  createMockedFunction(
+    contractAddress,
+    'stakingPoolCreator',
+    'stakingPoolCreator():(address)'
+  ).returns([ethereum.Value.fromAddress(factory)]);
+
   createStakingPoolFactory();
   createStakingPoolMediator();
 
@@ -575,9 +583,7 @@ test('Will handle Initialized event', () => {
       defaultLogType,
       newBlock(),
       newTransaction(instigator.toHex()),
-      [
-        new ethereum.EventParam('version', ethereum.Value.fromI32(0)),
-      ],
+      [new ethereum.EventParam('version', ethereum.Value.fromI32(0))],
       null
     )
   );

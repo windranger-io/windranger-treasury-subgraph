@@ -74,10 +74,7 @@ test('Will handle CreatePerformanceBond event', () => {
         new ethereum.EventParam('configuration', ethereum.Value.fromTuple(configuration)),
         new ethereum.EventParam('rewards', ethereum.Value.fromArray([])),
         new ethereum.EventParam('treasury', ethereum.Value.fromAddress(TREASURY)),
-        new ethereum.EventParam(
-          'instigator',
-          ethereum.Value.fromAddress(INSTIGATOR)
-        )
+        new ethereum.EventParam('instigator', ethereum.Value.fromAddress(INSTIGATOR))
       ],
       null
     )
@@ -100,12 +97,7 @@ test('Will handle CreatePerformanceBond event', () => {
   assert.fieldEquals('Bond', bondAddress.toHex(), 'collateralAmount', '0');
   assert.fieldEquals('Bond', bondAddress.toHex(), 'collateralFull', 'false');
   assert.fieldEquals('Bond', bondAddress.toHex(), 'collateralSlashed', '0');
-  assert.fieldEquals(
-    'Bond',
-    bondAddress.toHex(),
-    'collateralTokens',
-    TREASURY.toHex()
-  );
+  assert.fieldEquals('Bond', bondAddress.toHex(), 'collateralTokens', TREASURY.toHex());
   assert.fieldEquals('Bond', bondAddress.toHex(), 'collateralWithdrawn', 'false');
   assert.fieldEquals('Bond', bondAddress.toHex(), 'paused', 'false');
 
@@ -151,7 +143,6 @@ test('Will handle CreatePerformanceBond event', () => {
 
 // - BeneficiaryUpdate(indexed address,indexed address)
 test('Will handle BeneficiaryUpdate event', () => {
-
   createPerformanceBondFactory();
 
   handleBeneficiaryUpdate(
@@ -163,14 +154,8 @@ test('Will handle BeneficiaryUpdate event', () => {
       newBlock(),
       newTransaction(INSTIGATOR.toHex()),
       [
-        new ethereum.EventParam(
-          'beneficiary',
-          ethereum.Value.fromAddress(BENEFICIARY)
-        ),
-        new ethereum.EventParam(
-          'instigator',
-          ethereum.Value.fromAddress(INSTIGATOR)
-        )
+        new ethereum.EventParam('beneficiary', ethereum.Value.fromAddress(BENEFICIARY)),
+        new ethereum.EventParam('instigator', ethereum.Value.fromAddress(INSTIGATOR))
       ],
       null
     )
@@ -239,10 +224,7 @@ test('Will handle OwnershipTransferred event', () => {
       newBlock(),
       newTransaction(),
       [
-        new ethereum.EventParam(
-          'previousOwner',
-          ethereum.Value.fromAddress(OWNER_OLD)
-        ),
+        new ethereum.EventParam('previousOwner', ethereum.Value.fromAddress(OWNER_OLD)),
         new ethereum.EventParam('newOwner', ethereum.Value.fromAddress(OWNER_NEW))
       ],
       null

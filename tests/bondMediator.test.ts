@@ -1,6 +1,11 @@
 // - Testing tools
 import { Address, Bytes, ethereum } from '@graphprotocol/graph-ts';
-import { assert, clearStore, createMockedFunction, test } from 'matchstick-as/assembly/index';
+import {
+  assert,
+  clearStore,
+  createMockedFunction,
+  test
+} from 'matchstick-as/assembly/index';
 
 // - Helpers, consts and utils
 import {
@@ -131,10 +136,7 @@ test('Will handle AddCollateralWhitelist event', () => {
       newTransaction(INSTIGATOR.toHex()),
       [
         new ethereum.EventParam('daoId', ethereum.Value.fromI32(DAO_ID)),
-        new ethereum.EventParam(
-          'collateralTokens',
-          ethereum.Value.fromAddress(TREASURY)
-        ),
+        new ethereum.EventParam('collateralTokens', ethereum.Value.fromAddress(TREASURY)),
         new ethereum.EventParam('instigator', ethereum.Value.fromAddress(INSTIGATOR))
       ],
       null
@@ -169,10 +171,7 @@ test('Will handle AdminChanged event', () => {
       newBlock(),
       newTransaction(INSTIGATOR.toHex()),
       [
-        new ethereum.EventParam(
-          'previousAdmin',
-          ethereum.Value.fromAddress(ADMIN_OLD)
-        ),
+        new ethereum.EventParam('previousAdmin', ethereum.Value.fromAddress(ADMIN_OLD)),
         new ethereum.EventParam('newAdmin', ethereum.Value.fromAddress(ADMIN_NEW))
       ],
       null
@@ -263,7 +262,12 @@ test('Will handle PerformanceBondCreatorUpdate event', () => {
     )
   );
 
-  assert.fieldEquals('BondMediator', BOND_MEDIATOR_ADDRESS, 'factory', FACTORY_NEW.toHex());
+  assert.fieldEquals(
+    'BondMediator',
+    BOND_MEDIATOR_ADDRESS,
+    'factory',
+    FACTORY_NEW.toHex()
+  );
   assert.fieldEquals(
     'BondMediator',
     BOND_MEDIATOR_ADDRESS,
@@ -470,9 +474,10 @@ test('Will handle GrantGlobalRole event', () => {
 // - Initialized(uint8)
 test('Will handle Initialized event', () => {
   const contractAddress = Address.fromString(BOND_MEDIATOR_ADDRESS);
-  createMockedFunction(contractAddress, "bondCreator", "bondCreator():(address)")
-    .returns([ethereum.Value.fromAddress(FACTORY_NEW)]);
-        
+  createMockedFunction(contractAddress, 'bondCreator', 'bondCreator():(address)').returns(
+    [ethereum.Value.fromAddress(FACTORY_NEW)]
+  );
+
   createPerformanceBondFactory();
   createPerformanceBondMediator();
 
@@ -486,14 +491,17 @@ test('Will handle Initialized event', () => {
       defaultLogType,
       newBlock(),
       newTransaction(INSTIGATOR.toHex()),
-      [
-        new ethereum.EventParam('version', ethereum.Value.fromI32(0)),
-      ],
+      [new ethereum.EventParam('version', ethereum.Value.fromI32(0))],
       null
     )
   );
 
-  assert.fieldEquals('BondMediator', BOND_MEDIATOR_ADDRESS, 'factory', FACTORY_NEW.toHex());
+  assert.fieldEquals(
+    'BondMediator',
+    BOND_MEDIATOR_ADDRESS,
+    'factory',
+    FACTORY_NEW.toHex()
+  );
   assert.fieldEquals(
     'BondMediator',
     BOND_MEDIATOR_ADDRESS,
@@ -551,10 +559,7 @@ test('Will handle RemoveCollateralWhitelist event', () => {
       newTransaction(INSTIGATOR.toHex()),
       [
         new ethereum.EventParam('daoId', ethereum.Value.fromI32(DAO_ID)),
-        new ethereum.EventParam(
-          'collateralTokens',
-          ethereum.Value.fromAddress(TREASURY)
-        ),
+        new ethereum.EventParam('collateralTokens', ethereum.Value.fromAddress(TREASURY)),
         new ethereum.EventParam('instigator', ethereum.Value.fromAddress(INSTIGATOR))
       ],
       null

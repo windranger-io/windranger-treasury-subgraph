@@ -31,8 +31,10 @@ export function handleBeneficiaryUpdate(event: BeneficiaryUpdate): void {
 
   stakingPool.beneficiary = event.params.beneficiary;
 
-  stakingPool.createdAtTimestamp =
-    stakingPool.createdAtTimestamp || event.block.timestamp;
+  stakingPool.createdAtTimestamp = stakingPool.createdAtTimestamp.gt(BigInt.fromI32(0))
+    ? stakingPool.createdAtTimestamp
+    : event.block.timestamp;
+
   stakingPool.lastUpdatedTimestamp = event.block.timestamp;
 
   stakingPool.save();
@@ -64,7 +66,10 @@ export function handleDeposit(event: DepositFilter): void {
   deposit.user = event.params.user;
   deposit.amount = depositAmount.plus(event.params.depositAmount);
 
-  deposit.createdAtTimestamp = deposit.createdAtTimestamp || event.block.timestamp;
+  deposit.createdAtTimestamp = deposit.createdAtTimestamp.gt(BigInt.fromI32(0))
+    ? deposit.createdAtTimestamp
+    : event.block.timestamp;
+
   deposit.lastUpdatedTimestamp = event.block.timestamp;
 
   deposit.save();
@@ -132,7 +137,10 @@ export function handleInitializeRewards(event: InitializeRewards): void {
   reward.token = event.params.rewardTokens;
   reward.amount = event.params.amount;
 
-  reward.createdAtTimestamp = reward.createdAtTimestamp || event.block.timestamp;
+  reward.createdAtTimestamp = reward.createdAtTimestamp.gt(BigInt.fromI32(0))
+    ? reward.createdAtTimestamp
+    : event.block.timestamp;
+
   reward.lastUpdatedTimestamp = event.block.timestamp;
 
   reward.save();
@@ -146,8 +154,10 @@ export function handleOwnershipTransferred(event: OwnershipTransferred): void {
 
   stakingPool.owner = event.params.newOwner;
 
-  stakingPool.createdAtTimestamp =
-    stakingPool.createdAtTimestamp || event.block.timestamp;
+  stakingPool.createdAtTimestamp = stakingPool.createdAtTimestamp.gt(BigInt.fromI32(0))
+    ? stakingPool.createdAtTimestamp
+    : event.block.timestamp;
+
   stakingPool.lastUpdatedTimestamp = event.block.timestamp;
 
   stakingPool.save();
@@ -231,7 +241,10 @@ export function handleWithdrawRewards(event: WithdrawRewards): void {
   withdrawal.user = event.params.user;
   withdrawal.reward = reward.id;
 
-  withdrawal.createdAtTimestamp = withdrawal.createdAtTimestamp || event.block.timestamp;
+  withdrawal.createdAtTimestamp = withdrawal.createdAtTimestamp.gt(BigInt.fromI32(0))
+    ? withdrawal.createdAtTimestamp
+    : event.block.timestamp;
+
   withdrawal.lastUpdatedTimestamp = event.block.timestamp;
 
   withdrawal.save();
@@ -264,10 +277,13 @@ export function handleWithdrawStake(event: WithdrawStake): void {
   withdrawal.user = event.params.user;
 
   // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-  const withdrawn: BigInt = withdrawal.amount as BigInt || BigInt.fromI32(0);
+  const withdrawn: BigInt = (withdrawal.amount as BigInt) || BigInt.fromI32(0);
   withdrawal.amount = withdrawn.plus(event.params.stake);
 
-  withdrawal.createdAtTimestamp = withdrawal.createdAtTimestamp || event.block.timestamp;
+  withdrawal.createdAtTimestamp = withdrawal.createdAtTimestamp.gt(BigInt.fromI32(0))
+    ? withdrawal.createdAtTimestamp
+    : event.block.timestamp;
+
   withdrawal.lastUpdatedTimestamp = event.block.timestamp;
 
   withdrawal.save();

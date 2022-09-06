@@ -28,8 +28,11 @@ export function handleBeneficiaryUpdate(event: BeneficiaryUpdate): void {
 
   stakingPoolFactory.beneficiary = event.params.beneficiary;
 
-  stakingPoolFactory.createdAtTimestamp =
-    stakingPoolFactory.createdAtTimestamp || event.block.timestamp;
+  stakingPoolFactory.createdAtTimestamp = stakingPoolFactory.createdAtTimestamp.gt(
+    BigInt.fromI32(0)
+  )
+    ? stakingPoolFactory.createdAtTimestamp
+    : event.block.timestamp;
   stakingPoolFactory.lastUpdatedTimestamp = event.block.timestamp;
 
   stakingPoolFactory.save();
@@ -75,8 +78,12 @@ export function handleStakingPoolCreated(event: StakingPoolCreated): void {
 
   stakingPoolFactory.factory = event.address;
 
-  stakingPoolFactory.createdAtTimestamp =
-    stakingPoolFactory.createdAtTimestamp || event.block.timestamp;
+  stakingPoolFactory.createdAtTimestamp = stakingPoolFactory.createdAtTimestamp.gt(
+    BigInt.fromI32(0)
+  )
+    ? stakingPoolFactory.createdAtTimestamp
+    : event.block.timestamp;
+
   stakingPoolFactory.lastUpdatedTimestamp = event.block.timestamp;
 
   stakingPoolFactory.save();
@@ -87,13 +94,11 @@ export function handleStakingPoolCreated(event: StakingPoolCreated): void {
       ? new StakingPool(event.params.stakingPool.toHex())
       : stakingPool;
 
-      
-      
   stakingPool.pool = event.params.stakingPool;
   stakingPool.stakeToken = event.params.config.stakeToken;
   stakingPool.creator = event.params.creator;
   stakingPool.treasury = event.params.config.treasury;
-  
+
   stakingPool.epochStartTimestamp = event.params.config.epochStartTimestamp;
   stakingPool.epochDuration = event.params.config.epochDuration;
   stakingPool.minTotalPoolStake = event.params.config.minTotalPoolStake;
@@ -102,8 +107,9 @@ export function handleStakingPoolCreated(event: StakingPoolCreated): void {
   stakingPool.rewardType = event.params.config.rewardType;
   stakingPool.factory = stakingPoolFactory.id;
 
-  stakingPool.createdAtTimestamp =
-    stakingPool.createdAtTimestamp || event.block.timestamp;
+  stakingPool.createdAtTimestamp = stakingPool.createdAtTimestamp.gt(BigInt.fromI32(0))
+    ? stakingPool.createdAtTimestamp
+    : event.block.timestamp;
   stakingPool.lastUpdatedTimestamp = event.block.timestamp;
 
   stakingPool.save();
@@ -120,8 +126,10 @@ export function handleStakingPoolCreated(event: StakingPoolCreated): void {
     poolReward.maxAmount = reward.maxAmount;
     poolReward.ratio = reward.ratio;
 
-    poolReward.createdAtTimestamp =
-      poolReward.createdAtTimestamp || event.block.timestamp;
+    poolReward.createdAtTimestamp = poolReward.createdAtTimestamp.gt(BigInt.fromI32(0))
+      ? poolReward.createdAtTimestamp
+      : event.block.timestamp;
+
     poolReward.lastUpdatedTimestamp = event.block.timestamp;
 
     poolReward.save();
@@ -141,8 +149,12 @@ export function handleOwnershipTransferred(event: OwnershipTransferred): void {
 
   stakingPoolFactory.owner = event.params.newOwner;
 
-  stakingPoolFactory.createdAtTimestamp =
-    stakingPoolFactory.createdAtTimestamp || event.block.timestamp;
+  stakingPoolFactory.createdAtTimestamp = stakingPoolFactory.createdAtTimestamp.gt(
+    BigInt.fromI32(0)
+  )
+    ? stakingPoolFactory.createdAtTimestamp
+    : event.block.timestamp;
+
   stakingPoolFactory.lastUpdatedTimestamp = event.block.timestamp;
 
   stakingPoolFactory.save();

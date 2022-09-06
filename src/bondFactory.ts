@@ -1,3 +1,5 @@
+import { BigInt } from '@graphprotocol/graph-ts';
+
 import {
   Bond,
   Bond__Metadata as Metadata,
@@ -26,8 +28,9 @@ export function handleCreatePerformanceBond(event: CreatePerformanceBond): void 
 
   bondFactory.factory = event.address;
 
-  bondFactory.createdAtTimestamp =
-    bondFactory.createdAtTimestamp || event.block.timestamp;
+  bondFactory.createdAtTimestamp = bondFactory.createdAtTimestamp.gt(BigInt.fromI32(0))
+    ? bondFactory.createdAtTimestamp
+    : event.block.timestamp;
   bondFactory.lastUpdatedTimestamp = event.block.timestamp;
 
   bondFactory.save();
@@ -105,8 +108,9 @@ export function handleBeneficiaryUpdate(event: BeneficiaryUpdate): void {
 
   bondFactory.beneficiary = event.params.beneficiary;
 
-  bondFactory.createdAtTimestamp =
-    bondFactory.createdAtTimestamp || event.block.timestamp;
+  bondFactory.createdAtTimestamp = bondFactory.createdAtTimestamp.gt(BigInt.fromI32(0))
+    ? bondFactory.createdAtTimestamp
+    : event.block.timestamp;
   bondFactory.lastUpdatedTimestamp = event.block.timestamp;
 
   bondFactory.save();
@@ -142,8 +146,9 @@ export function handleOwnershipTransferred(event: OwnershipTransferred): void {
 
   bondFactory.owner = event.params.newOwner;
 
-  bondFactory.createdAtTimestamp =
-    bondFactory.createdAtTimestamp || event.block.timestamp;
+  bondFactory.createdAtTimestamp = bondFactory.createdAtTimestamp.gt(BigInt.fromI32(0))
+    ? bondFactory.createdAtTimestamp
+    : event.block.timestamp;
   bondFactory.lastUpdatedTimestamp = event.block.timestamp;
 
   bondFactory.save();

@@ -46,7 +46,10 @@ export function handleAllowRedemption(event: AllowRedemption): void {
   bond.redeemableReason = event.params.reason;
   bond.redeemableAuthorizer = event.params.authorizer;
 
-  bond.createdAtTimestamp = bond.createdAtTimestamp || event.block.timestamp;
+  bond.createdAtTimestamp = bond.createdAtTimestamp.gt(BigInt.fromI32(0))
+    ? bond.createdAtTimestamp
+    : event.block.timestamp;
+
   bond.lastUpdatedTimestamp = event.block.timestamp;
 
   bond.save();
@@ -59,7 +62,9 @@ export function handleBeneficiaryUpdate(event: BeneficiaryUpdate): void {
 
   bond.beneficiary = event.params.beneficiary;
 
-  bond.createdAtTimestamp = bond.createdAtTimestamp || event.block.timestamp;
+  bond.createdAtTimestamp = bond.createdAtTimestamp.gt(BigInt.fromI32(0))
+    ? bond.createdAtTimestamp
+    : event.block.timestamp;
   bond.lastUpdatedTimestamp = event.block.timestamp;
 
   bond.save();
@@ -111,7 +116,9 @@ export function handleDeposit(event: DepositFilter): void {
   deposit.collateralAmount = depositAmount.plus(event.params.collateralAmount);
   deposit.collateralTokens = event.params.collateralTokens;
 
-  deposit.createdAtTimestamp = deposit.createdAtTimestamp || event.block.timestamp;
+  deposit.createdAtTimestamp = deposit.createdAtTimestamp.gt(BigInt.fromI32(0))
+    ? deposit.createdAtTimestamp
+    : event.block.timestamp;
   deposit.lastUpdatedTimestamp = event.block.timestamp;
 
   deposit.save();
@@ -195,7 +202,9 @@ export function handleMetaDataUpdate(event: MetaDataUpdate): void {
   metadata.bond = bond.id;
   metadata.data = event.params.data;
 
-  metadata.createdAtTimestamp = metadata.createdAtTimestamp || event.block.timestamp;
+  metadata.createdAtTimestamp = metadata.createdAtTimestamp.gt(BigInt.fromI32(0))
+    ? metadata.createdAtTimestamp
+    : event.block.timestamp;
   metadata.lastUpdatedTimestamp = event.block.timestamp;
 
   metadata.save();
@@ -284,7 +293,9 @@ export function handleRedemption(event: RedemptionFilter): void {
   redemption.debtAmount = redemptionDebtAmount.plus(event.params.debtAmount);
   redemption.debtTokens = event.params.debtTokens;
 
-  redemption.createdAtTimestamp = redemption.createdAtTimestamp || event.block.timestamp;
+  redemption.createdAtTimestamp = redemption.createdAtTimestamp.gt(BigInt.fromI32(0))
+    ? redemption.createdAtTimestamp
+    : event.block.timestamp;
   redemption.lastUpdatedTimestamp = event.block.timestamp;
 
   redemption.save();
@@ -323,7 +334,9 @@ export function handleRegisterReward(event: RegisterReward): void {
   rewardPool.timeLock = event.params.timeLock;
   rewardPool.tokens = event.params.tokens;
 
-  rewardPool.createdAtTimestamp = rewardPool.createdAtTimestamp || event.block.timestamp;
+  rewardPool.createdAtTimestamp = rewardPool.createdAtTimestamp.gt(BigInt.fromI32(0))
+    ? rewardPool.createdAtTimestamp
+    : event.block.timestamp;
   rewardPool.lastUpdatedTimestamp = event.block.timestamp;
 
   rewardPool.save();
