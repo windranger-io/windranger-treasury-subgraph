@@ -125,6 +125,7 @@ export function handleStakingPoolCreated(event: StakingPoolCreated): void {
     poolReward.amount = BigInt.fromI32(0);
     poolReward.maxAmount = reward.maxAmount;
     poolReward.ratio = reward.ratio;
+    poolReward.token = reward.tokens;
 
     poolReward.createdAtTimestamp = poolReward.createdAtTimestamp.gt(BigInt.fromI32(0))
       ? poolReward.createdAtTimestamp

@@ -439,6 +439,11 @@
         "internalType": "address",
         "name": "erc20CapableTreasury",
         "type": "address"
+      },
+      {
+        "internalType": "string",
+        "name": "metadata",
+        "type": "string"
       }
     ],
     "name": "createDao",
