@@ -35,7 +35,7 @@
     "prettier": "2.6.2"
   },
   "devDependencies": {
-    "@graphprotocol/graph-cli": "0.23.2",
+    "@graphprotocol/graph-cli": "0.37.0",
     "@typescript-eslint/eslint-plugin": "5.23.0",
     "@typescript-eslint/parser": "5.23.0",
     "eslint": "8.15.0",
